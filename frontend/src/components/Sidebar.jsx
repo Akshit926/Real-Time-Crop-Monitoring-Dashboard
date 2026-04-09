@@ -1,0 +1,87 @@
+import { NavLink, useLocation } from 'react-router-dom';
+import { useLanguage } from '../context/LanguageContext';
+import {
+  LayoutDashboard,
+  ScanLine,
+  Map,
+  BarChart3,
+  Leaf,
+  Languages,
+  Menu,
+  X
+} from 'lucide-react';
+import { useState } from 'react';
+import './Sidebar.css';
+
+const navItems = [
+  { path: '/', icon: LayoutDashboard, labelKey: 'nav_dashboard' },
+  { path: '/analyze', icon: ScanLine, labelKey: 'nav_analyze' },
+  { path: '/farm-map', icon: Map, labelKey: 'nav_farm_map' },
+  { path: '/analytics', icon: BarChart3, labelKey: 'nav_analytics' },
+];
+
+export default function Sidebar() {
+  const { t, toggleLang, lang } = useLanguage();
+  const location = useLocation();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  return (
+    <>
+      {/* Mobile hamburger */}
+      <button
+        className="sidebar-mobile-toggle"
+        onClick={() => setMobileOpen(!mobileOpen)}
+        aria-label="Toggle menu"
+      >
+        {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+      </button>
+
+      {/* Overlay */}
+      {mobileOpen && (
+        <div className="sidebar-overlay" onClick={() => setMobileOpen(false)} />
+      )}
+
+      <aside className={`sidebar ${mobileOpen ? 'sidebar-open' : ''}`}>
+        {/* Brand */}
+        <div className="sidebar-brand">
+          <div className="sidebar-logo">
+            <Leaf size={28} strokeWidth={2.5} />
+          </div>
+          <div className="sidebar-brand-text">
+            <span className="sidebar-brand-name">{t('brand_name')}</span>
+            <span className="sidebar-brand-tagline">{t('brand_tagline')}</span>
+          </div>
+        </div>
+
+        {/* Nav */}
+        <nav className="sidebar-nav">
+          {navItems.map(item => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
+            return (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className={`sidebar-link ${isActive ? 'sidebar-link-active' : ''}`}
+                onClick={() => setMobileOpen(false)}
+              >
+                {isActive && <div className="sidebar-active-indicator" />}
+                <Icon size={20} />
+                <span>{t(item.labelKey)}</span>
+              </NavLink>
+            );
+          })}
+        </nav>
+
+        {/* Footer */}
+        <div className="sidebar-footer">
+          <button className="sidebar-lang-btn" onClick={toggleLang}>
+            <Languages size={18} />
+            <span>{t('lang_toggle')}</span>
+          </button>
+          <div className="sidebar-version">v1.0 — AI Powered</div>
+        </div>
+      </aside>
+    </>
+  );
+}
