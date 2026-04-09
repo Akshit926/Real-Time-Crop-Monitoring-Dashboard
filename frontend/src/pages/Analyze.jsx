@@ -234,6 +234,12 @@ export default function Analyze() {
                     style={{ width: `${result.confidence}%` }}
                   />
                 </div>
+                {result.reason && (
+                  <div style={{ marginTop: 16 }}>
+                    <div className="text-secondary" style={{ marginBottom: 8 }}>{t('reason')}</div>
+                    <p className="result-description" style={{ marginBottom: 0 }}>{result.reason}</p>
+                  </div>
+                )}
                 {result.description && (
                   <p className="result-description">{result.description}</p>
                 )}
@@ -245,19 +251,19 @@ export default function Analyze() {
                   <h3 className="heading-md" style={{ marginBottom: 12 }}>{t('recommendations')}</h3>
                   <div className="rec-cards">
                     <div className="rec-card glass-card">
-                      <div className="rec-card-icon rec-fertilizer"><FlaskConical size={20} /></div>
-                      <div className="rec-card-label">{t('rec_fertilizer')}</div>
-                      <p className="rec-card-text">{result.recommendations.fertilizer}</p>
+                      <div className="rec-card-icon rec-treatment"><FlaskConical size={20} /></div>
+                      <div className="rec-card-label">{t('rec_treatment')}</div>
+                      <p className="rec-card-text">{result.recommendations.treatment}</p>
                     </div>
                     <div className="rec-card glass-card">
-                      <div className="rec-card-icon rec-irrigation"><Droplets size={20} /></div>
-                      <div className="rec-card-label">{t('rec_irrigation')}</div>
-                      <p className="rec-card-text">{result.recommendations.irrigation}</p>
+                      <div className="rec-card-icon rec-environment"><Droplets size={20} /></div>
+                      <div className="rec-card-label">{t('rec_environment')}</div>
+                      <p className="rec-card-text">{result.recommendations.environment}</p>
                     </div>
                     <div className="rec-card glass-card">
-                      <div className="rec-card-icon rec-pest"><Bug size={20} /></div>
-                      <div className="rec-card-label">{t('rec_pest')}</div>
-                      <p className="rec-card-text">{result.recommendations.pest_control}</p>
+                      <div className="rec-card-icon rec-actions"><Bug size={20} /></div>
+                      <div className="rec-card-label">{t('rec_actions')}</div>
+                      <p className="rec-card-text">{result.recommendations.field_actions}</p>
                     </div>
                   </div>
                 </div>

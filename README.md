@@ -1,6 +1,6 @@
-AgroVision is a full-stack, AI-powered agricultural monitoring platform designed to help farmers detect crop diseases and manage farm health in real-time. It features a **FastAPI** backend powering a **MobileNetV2 CNN** (simulated) and a modern **React + Vite** frontend with a high-performance glassmorphism UI.
+AgroVision is a full-stack, AI-powered agricultural monitoring platform designed to help farmers detect crop diseases and manage farm health in real-time. It features a **FastAPI** backend powering a **fine-tuned MobileNetV2 CNN** loaded from the provided `.h5` model, plus a modern **React + Vite** frontend with a high-performance glassmorphism UI.
 ## 🚀 Features
- * **🔍 AI Disease Detection:** Upload or capture images via webcam to identify diseases across 6 major crops (Tomato, Potato, Corn, Rice, Wheat, Apple).
+ * **🔍 AI Disease Detection:** Upload or capture images via webcam to identify diseases across the full PlantVillage label set used by the fine-tuned model.
  * **📊 Interactive Analytics:** Real-time data visualization using Chart.js, including disease distribution and health trends.
  * **🗺️ Farm Zone Mapping:** SVG-based interactive map to monitor different sectors of a farm with color-coded health statuses.
  * **🤖 Local AI Chatbot:** A rule-based agricultural knowledge engine supporting 50+ Q&A pairs (No API keys required).
@@ -11,7 +11,7 @@ AgroVision is a full-stack, AI-powered agricultural monitoring platform designed
 |---|---|
 | **Frontend** | React 18, Vite, Tailwind CSS, Framer Motion, Chart.js |
 | **Backend** | FastAPI (Python 3.9+), Uvicorn |
-| **AI/ML** | MobileNetV2 (CNN Architecture), Pillow, NumPy |
+| **AI/ML** | Fine-tuned MobileNetV2, TensorFlow/Keras, Pillow, NumPy |
 | **Icons/UI** | Lucide React, Google Fonts (Inter & Outfit) |
 ## 📂 Project Structure
 ```text
@@ -58,9 +58,10 @@ npm run dev
 ```
 *Open http://localhost:5173 in your browser.*
 ## 🧠 AI Model Approach
-To ensure immediate "plug-and-play" capability without requiring 1GB+ dataset downloads or high-end GPUs, AgroVision utilizes a **Simulated Prediction Engine**:
- * **Logic:** The CropDiseasePredictor class processes real image uploads but uses texture/color analysis to return varied, realistic disease classifications.
- * **Extensibility:** The architecture is built to be "Production-Ready." You can replace the simulation with a trained .h5 or .pt model in model.py with a single-line change.
+AgroVision now loads the provided fine-tuned `.h5` model directly for inference:
+ * **Logic:** The backend resizes uploaded images to the model's expected input, runs the MobileNetV2 classifier, and returns the top label with softmax confidence.
+ * **Output:** Each prediction includes the crop, disease, confidence, a plain-language reason, and practical treatment steps.
+ * **Note:** The backend expects a TensorFlow-compatible Python environment so the `.h5` model can be loaded at runtime.
 ## 📈 Dashboard Overview
  * **Dashboard:** High-level overview of total scans and active alerts.
  * **Analyze:** The core utility where users interact with the CNN model via file upload or live camera.

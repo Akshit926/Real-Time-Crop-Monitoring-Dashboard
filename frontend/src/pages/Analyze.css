@@ -266,17 +266,17 @@
   flex-shrink: 0;
 }
 
-.rec-fertilizer {
+.rec-treatment {
   background: rgba(139, 92, 246, 0.12);
   color: #a78bfa;
 }
 
-.rec-irrigation {
+.rec-environment {
   background: rgba(59, 130, 246, 0.12);
   color: #60a5fa;
 }
 
-.rec-pest {
+.rec-actions {
   background: rgba(234, 179, 8, 0.12);
   color: #facc15;
 }
