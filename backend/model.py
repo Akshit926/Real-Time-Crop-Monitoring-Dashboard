@@ -35,7 +35,7 @@ except Exception as exc:  # pragma: no cover - handled at runtime
     TF_IMPORT_ERROR = exc
 
 
-MODEL_PATH = Path(__file__).resolve().parent.parent / "fine_tuned_model (1).h5"
+MODEL_PATH = Path(__file__).resolve().parent / "crop_model.h5"
 DEFAULT_IMAGE_SIZE = (224, 224)
 
 

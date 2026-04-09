@@ -1,0 +1,26 @@
+# Ignore local environments
+.venv/
+venv/
+.venv*/
+env/
+.env
+
+# Ignore node modules
+node_modules/
+
+# Ignore build outputs (Vercel builds them on-the-fly or handles them)
+dist/
+build/
+.next/
+
+# Ignore local logs
+*.log
+backend/logs/
+
+# Ignore OS junk
+.DS_Store
+Thumbs.db
+
+# Ignore IDE junk
+.vscode/
+.idea/
