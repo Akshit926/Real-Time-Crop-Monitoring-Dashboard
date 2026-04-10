@@ -14,10 +14,6 @@ async function fetchWithRetry(url, options = {}, retries = 2) {
   }
 }
 
-export async function getFarmZones() {
-  const response = await fetchWithRetry(`${API_BASE}/zones`);
-  return response.json();
-}
 
 
 export async function predictDisease(imageFile) {
