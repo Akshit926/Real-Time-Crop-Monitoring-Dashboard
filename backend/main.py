@@ -169,6 +169,8 @@ async def predict_disease(file: UploadFile = File(...)):
         result = predictor.predict(image_bytes)
         return result
 
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
     except HTTPException:
         raise
     except Exception as e:

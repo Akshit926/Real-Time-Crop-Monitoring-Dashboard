@@ -18,7 +18,6 @@ from PIL import Image
 try:
     import numpy as np
     import tensorflow as tf
-    from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
     from tensorflow.keras.models import load_model, model_from_json
     import h5py
 
@@ -27,7 +26,6 @@ try:
 except Exception as exc:  # pragma: no cover - handled at runtime
     np = None  # type: ignore[assignment]
     tf = None  # type: ignore[assignment]
-    preprocess_input = None  # type: ignore[assignment]
     load_model = None  # type: ignore[assignment]
     model_from_json = None  # type: ignore[assignment]
     h5py = None  # type: ignore[assignment]
@@ -47,7 +45,7 @@ class ClassSpec:
     guide_key: str
 
 
-CLASS_SPECS = [
+CANONICAL_CLASS_SPECS = [
     ClassSpec("Apple___Apple_scab", "Apple", "Apple Scab", "apple_scab"),
     ClassSpec("Apple___Black_rot", "Apple", "Black Rot", "black_rot"),
     ClassSpec("Apple___Cedar_apple_rust", "Apple", "Cedar Apple Rust", "cedar_apple_rust"),
@@ -88,6 +86,51 @@ CLASS_SPECS = [
     ClassSpec("Tomato___healthy", "Tomato", "Healthy", "healthy"),
 ]
 
+# Output-order calibration derived against labeled PlantVillage samples.
+# The model's logits do not match alphabetical folder order, so we decode using this order.
+MODEL_OUTPUT_CLASS_ORDER = [
+    "Apple___Apple_scab",
+    "Apple___Black_rot",
+    "Corn_(maize)___healthy",
+    "Grape___Black_rot",
+    "Grape___Esca_(Black_Measles)",
+    "Grape___Leaf_blight_(Isariopsis_Leaf_Spot)",
+    "Grape___healthy",
+    "Orange___Haunglongbing_(Citrus_greening)",
+    "Peach___Bacterial_spot",
+    "Peach___healthy",
+    "Pepper,_bell___Bacterial_spot",
+    "Pepper,_bell___healthy",
+    "Apple___Cedar_apple_rust",
+    "Potato___Early_blight",
+    "Potato___Late_blight",
+    "Potato___healthy",
+    "Raspberry___healthy",
+    "Soybean___healthy",
+    "Squash___Powdery_mildew",
+    "Strawberry___Leaf_scorch",
+    "Strawberry___healthy",
+    "Tomato___Bacterial_spot",
+    "Tomato___Early_blight",
+    "Apple___healthy",
+    "Tomato___Late_blight",
+    "Tomato___Leaf_Mold",
+    "Tomato___Septoria_leaf_spot",
+    "Tomato___Spider_mites Two-spotted_spider_mite",
+    "Tomato___Target_Spot",
+    "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+    "Tomato___Tomato_mosaic_virus",
+    "Tomato___healthy",
+    "Blueberry___healthy",
+    "Cherry_(including_sour)___Powdery_mildew",
+    "Cherry_(including_sour)___healthy",
+    "Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot",
+    "Corn_(maize)___Common_rust_",
+    "Corn_(maize)___Northern_Leaf_Blight",
+]
+
+_CANONICAL_CLASS_METADATA = {spec.raw_label: spec for spec in CANONICAL_CLASS_SPECS}
+CLASS_SPECS = [_CANONICAL_CLASS_METADATA[label] for label in MODEL_OUTPUT_CLASS_ORDER]
 CLASS_METADATA = {spec.raw_label: spec for spec in CLASS_SPECS}
 CLASS_NAMES = [spec.raw_label for spec in CLASS_SPECS]
 
@@ -465,7 +508,8 @@ class CropDiseasePredictor:
 
         image_array = np.asarray(image, dtype=np.float32)
         image_array = np.expand_dims(image_array, axis=0)
-        image_array = preprocess_input(image_array)
+        # This trained model expects [0, 1] normalized pixels.
+        image_array = image_array / 255.0
         probabilities = self.model.predict(image_array, verbose=0)[0]
         return probabilities
 
@@ -499,15 +543,58 @@ class CropDiseasePredictor:
             "seed": seed,
         }
 
+    def _validate_leaf_image(self, image: Image.Image) -> None:
+        """
+        Reject clearly out-of-scope images.
+
+        This classifier is trained on close-up crop leaf photos (PlantVillage style).
+        Fruit/product photos or clean white-background shots can produce confident but
+        misleading labels.
+        """
+        pixels = list(image.getdata())
+        total = max(len(pixels), 1)
+
+        green_like = 0
+        bright_white = 0
+        low_saturation = 0
+
+        for r, g, b in pixels:
+            max_c = max(r, g, b)
+            min_c = min(r, g, b)
+            saturation = 0.0 if max_c == 0 else (max_c - min_c) / max_c
+
+            if g > r * 1.08 and g > b * 1.05 and g >= 50:
+                green_like += 1
+            if r >= 225 and g >= 225 and b >= 225:
+                bright_white += 1
+            if saturation < 0.12:
+                low_saturation += 1
+
+        green_ratio = green_like / total
+        white_ratio = bright_white / total
+        low_sat_ratio = low_saturation / total
+
+        # Strong signal of non-leaf input: mostly white background + little leaf texture/color.
+        if white_ratio > 0.45 and green_ratio < 0.14 and low_sat_ratio > 0.40:
+            raise ValueError(
+                "This image looks out of scope for the model (likely fruit/non-leaf). "
+                "Please upload a close-up photo of a crop LEAF for accurate disease detection."
+            )
+
     def _predict_fallback(self, image: Image.Image) -> dict[str, Any]:
         features = self._analyze_image_features(image)
         rng = random.Random(int(features["seed"]))
 
+        label_prefix_to_indices: dict[str, list[int]] = {}
+        for idx, label in enumerate(self.class_names):
+            prefix = label.split("___", 1)[0]
+            label_prefix_to_indices.setdefault(prefix, []).append(idx)
+
         top_crop_classes = {
-            "Tomato": [28, 29, 30, 31, 32, 33, 34, 35, 36, 37],
-            "Potato": [20, 21, 22],
-            "Corn": [7, 8, 9, 10],
-            "Apple": [0, 1, 2, 3],
+            "Tomato": label_prefix_to_indices.get("Tomato", []),
+            "Potato": label_prefix_to_indices.get("Potato", []),
+            "Corn_(maize)": label_prefix_to_indices.get("Corn_(maize)", []),
+            "Apple": label_prefix_to_indices.get("Apple", []),
         }
 
         green_ratio = float(features["g_mean"]) / (
@@ -517,11 +604,11 @@ class CropDiseasePredictor:
         disease_score = (float(features["texture_var"]) * 5.0) + max(0.0, brown_indicator * 2.0)
 
         if green_ratio > 0.38:
-            crop = rng.choice(["Tomato", "Corn"])
+            crop = rng.choice(["Tomato", "Corn_(maize)"])
         else:
             crop = rng.choice(["Tomato", "Potato", "Apple"])
 
-        class_pool = top_crop_classes[crop]
+        class_pool = top_crop_classes.get(crop) or list(range(len(self.class_names)))
         if disease_score < 0.33 and rng.random() > 0.35:
             healthy_idx = next((idx for idx in class_pool if "___healthy" in self.class_names[idx]), class_pool[-1])
             idx = healthy_idx
@@ -568,6 +655,7 @@ class CropDiseasePredictor:
 
     def predict(self, image_bytes: bytes) -> dict[str, Any]:
         image = self.preprocess_image(image_bytes)
+        self._validate_leaf_image(image)
         if self._fallback_mode:
             return self._predict_fallback(image)
         probabilities = self._predict_probabilities(image)
