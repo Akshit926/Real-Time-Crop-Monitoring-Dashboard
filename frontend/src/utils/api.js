@@ -47,11 +47,11 @@ export async function predictDisease(imageFile) {
   return response.json();
 }
 
-export async function sendChatMessage(message, lang = 'en') {
+export async function sendChatMessage(message, lang = 'en', weather = null) {
   const response = await fetchWithRetry(`${API_BASE}/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message, lang }),
+    body: JSON.stringify({ message, lang, weather }),
   });
 
   return response.json();
@@ -59,5 +59,20 @@ export async function sendChatMessage(message, lang = 'en') {
 
 export async function getFarmZones() {
   const response = await fetchWithRetry(`${API_BASE}/zones`);
+  return response.json();
+}
+
+export async function getWeather(params = {}) {
+  const search = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      search.set(key, String(value));
+    }
+  });
+
+  const response = await fetchWithRetry(
+    `${API_BASE}/weather${search.toString() ? `?${search.toString()}` : ''}`,
+  );
+
   return response.json();
 }

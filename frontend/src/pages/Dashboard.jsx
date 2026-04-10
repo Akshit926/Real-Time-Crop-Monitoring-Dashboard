@@ -1,7 +1,10 @@
+import { useEffect, useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 import StatsCard from '../components/StatsCard';
 import DetectionCard from '../components/DetectionCard';
+import WeatherPanel from '../components/WeatherPanel';
+import { getWeather } from '../utils/api';
 import { ScanLine, Heart, AlertTriangle, MapPin, ArrowRight, BarChart3 } from 'lucide-react';
 import './Dashboard.css';
 
@@ -14,8 +17,44 @@ const recentDetections = [
 ];
 
 export default function Dashboard() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const navigate = useNavigate();
+  const [weather, setWeather] = useState(null);
+  const [weatherLoading, setWeatherLoading] = useState(true);
+  const [weatherError, setWeatherError] = useState('');
+
+  const loadWeather = () => {
+    setWeatherLoading(true);
+    setWeatherError('');
+
+    const fetchWeather = (params = {}) => {
+      getWeather({ lang, location: 'Your Farm', ...params })
+        .then(setWeather)
+        .catch(() => setWeatherError(t('weather_error')))
+        .finally(() => setWeatherLoading(false));
+    };
+
+    if (!navigator.geolocation) {
+      fetchWeather();
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        fetchWeather({
+          lat: position.coords.latitude,
+          lon: position.coords.longitude,
+          location: t('weather_farm_label'),
+        });
+      },
+      () => fetchWeather(),
+      { enableHighAccuracy: false, timeout: 7000, maximumAge: 300000 },
+    );
+  };
+
+  useEffect(() => {
+    loadWeather();
+  }, [lang]);
 
   return (
     <div className="dashboard">
@@ -62,6 +101,14 @@ export default function Dashboard() {
           delay={300}
         />
       </div>
+
+      <WeatherPanel
+        weather={weather}
+        loading={weatherLoading}
+        error={weatherError}
+        onRefresh={loadWeather}
+        t={t}
+      />
 
       {/* Quick Actions */}
       <div className="dashboard-actions" style={{ marginTop: 28 }}>

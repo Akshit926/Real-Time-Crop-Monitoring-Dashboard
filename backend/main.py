@@ -9,13 +9,19 @@ from pydantic import BaseModel
 try:
     from .model import predictor
     from .chatbot import chatbot
+    from .weather import get_weather
+    from .ai_chat import get_ai_chat_response
 except ImportError:
     try:  # Vercel / sys.path-based import
         from backend.model import predictor
         from backend.chatbot import chatbot
+        from backend.weather import get_weather
+        from backend.ai_chat import get_ai_chat_response
     except ImportError:  # pragma: no cover - bare local script execution
         from model import predictor  # type: ignore[no-redef]
         from chatbot import chatbot  # type: ignore[no-redef]
+        from weather import get_weather  # type: ignore[no-redef]
+        from ai_chat import get_ai_chat_response  # type: ignore[no-redef]
 
 app = FastAPI(
     title="AgroVision API",
@@ -37,10 +43,25 @@ app.add_middleware(
 class ChatRequest(BaseModel):
     message: str
     lang: str = "en"
+    weather: dict | None = None
 
 
 class ChatResponse(BaseModel):
     response: str
+    source: str = "local"
+
+
+class WeatherResponse(BaseModel):
+    location: str
+    latitude: float
+    longitude: float
+    temperature_c: int
+    wind_kph: int
+    humidity: int
+    precipitation_probability: int
+    condition: str
+    advice: str
+    source: str
 
 
 # ── Farm Zone Data (Simulated) ────────────────────────────────────
@@ -163,8 +184,8 @@ async def chat_endpoint(request: ChatRequest):
     Returns: AI-generated farming advice.
     """
     try:
-        response = chatbot.get_response(request.message, request.lang)
-        return ChatResponse(response=response)
+        response, source = get_ai_chat_response(chatbot, request.message, request.lang, request.weather)
+        return ChatResponse(response=response, source=source)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Chat failed: {str(e)}")
 
@@ -173,6 +194,15 @@ async def chat_endpoint(request: ChatRequest):
 async def get_farm_zones():
     """Return simulated farm zone data."""
     return {"zones": FARM_ZONES}
+
+
+@app.get("/weather", response_model=WeatherResponse)
+async def weather_endpoint(lat: float | None = None, lon: float | None = None, lang: str = "en", location: str | None = None):
+    """Return current field weather and lightweight farming advice."""
+    try:
+        return WeatherResponse(**get_weather(lat=lat, lon=lon, lang=lang, location_name=location))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Weather lookup failed: {str(e)}")
 
 
 if __name__ == "__main__":

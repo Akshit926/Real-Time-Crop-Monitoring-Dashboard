@@ -8,7 +8,8 @@ env/
 # Ignore node modules
 node_modules/
 
-# Ignore build outputs (Vercel builds them on-the-fly or handles them)
+# Ignore local build artifacts (Vercel builds fresh in CI)
+frontend/dist/
 dist/
 build/
 .next/
@@ -24,3 +25,10 @@ Thumbs.db
 # Ignore IDE junk
 .vscode/
 .idea/
+
+# Ignore large ML model (too big for Vercel bundle; fallback mode handles it)
+backend/crop_model.h5
+
+# Ignore local Python envs in backend
+backend/.venv/
+backend/.venv*/
