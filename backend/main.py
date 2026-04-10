@@ -9,9 +9,13 @@ from pydantic import BaseModel
 try:
     from .model import predictor
     from .chatbot import chatbot
-except ImportError:  # pragma: no cover - local script execution fallback
-    from model import predictor
-    from chatbot import chatbot
+except ImportError:
+    try:  # Vercel / sys.path-based import
+        from backend.model import predictor
+        from backend.chatbot import chatbot
+    except ImportError:  # pragma: no cover - bare local script execution
+        from model import predictor  # type: ignore[no-redef]
+        from chatbot import chatbot  # type: ignore[no-redef]
 
 app = FastAPI(
     title="AgroVision API",

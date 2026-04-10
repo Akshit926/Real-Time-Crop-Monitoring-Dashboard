@@ -184,7 +184,10 @@ export default function Analyze() {
             <div className="analyze-loading glass-card-static">
               <div className="loading-spinner" />
               <p className="heading-md">{t('analyzing')}</p>
-              <p className="text-secondary">AI model is processing your image...</p>
+              <p className="text-secondary">AI model is processing your image…</p>
+              <p className="text-secondary" style={{ fontSize: '0.78rem', marginTop: 6, opacity: 0.7 }}>
+                First request may take ~30s if the server is waking up.
+              </p>
               <div className="loading-bars">
                 <div className="loading-bar" style={{ animationDelay: '0s' }} />
                 <div className="loading-bar" style={{ animationDelay: '0.2s' }} />
