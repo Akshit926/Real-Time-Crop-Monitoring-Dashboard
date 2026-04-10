@@ -29,3 +29,4 @@ Thumbs.db
 # Project specific
 backend/logs/
 frontend/dist/
+*.log
