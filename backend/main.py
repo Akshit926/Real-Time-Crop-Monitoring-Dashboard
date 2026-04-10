@@ -5,10 +5,13 @@ AgroVision Backend — FastAPI application for crop disease prediction and chat.
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import random
 
-from model import predictor
-from chatbot import chatbot
+try:
+    from .model import predictor
+    from .chatbot import chatbot
+except ImportError:  # pragma: no cover - local script execution fallback
+    from model import predictor
+    from chatbot import chatbot
 
 app = FastAPI(
     title="AgroVision API",
@@ -107,6 +110,15 @@ FARM_ZONES = [
 async def root():
     """Health check endpoint."""
     return {"status": "ok", "app": "AgroVision API", "version": "1.0.0"}
+
+
+@app.get("/health")
+async def health():
+    """Dedicated health endpoint for deployment checks."""
+    return {
+        "status": "ok",
+        "model_mode": "fallback" if getattr(predictor, "_fallback_mode", False) else "tensorflow",
+    }
 
 
 @app.post("/predict")

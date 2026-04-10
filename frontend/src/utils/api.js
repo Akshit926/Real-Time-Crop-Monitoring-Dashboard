@@ -1,60 +1,63 @@
-const API_BASE = "https://real-time-crop-monitoring-dashboard.onrender.com";
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '');
 
-async function fetchWithRetry(url, options = {}, retries = 2) {
+async function fetchWithRetry(url, options = {}, retries = 2, delayMs = 1500) {
   try {
-    const res = await fetch(url, options);
-    if (!res.ok) throw new Error("Request failed");
-    return res;
-  } catch (err) {
-    if (retries > 0) {
-      await new Promise(r => setTimeout(r, 2000));
-      return fetchWithRetry(url, options, retries - 1);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 25000);
+    const response = await fetch(url, { ...options, signal: controller.signal });
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({ detail: `HTTP ${response.status}` }));
+      throw new Error(body.detail || `HTTP ${response.status}`);
     }
-    throw err;
+
+    return response;
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      if (retries > 0) {
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+        return fetchWithRetry(url, options, retries - 1, delayMs);
+      }
+      throw new Error('The server took too long to respond. Please try again.');
+    }
+
+    if (retries > 0 && (error.message === 'Failed to fetch' || error.message === 'Request failed')) {
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+      return fetchWithRetry(url, options, retries - 1, delayMs);
+    }
+
+    if (error.message === 'Failed to fetch') {
+      throw new Error('Could not reach the backend API. Check that the deployment is live and the API route is available.');
+    }
+
+    throw error;
   }
 }
-
-
 
 export async function predictDisease(imageFile) {
   const formData = new FormData();
   formData.append('file', imageFile);
 
-  const response = await fetch(`${API_BASE}/predict`, {
+  const response = await fetchWithRetry(`${API_BASE}/predict`, {
     method: 'POST',
     body: formData,
   });
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ detail: 'Prediction failed' }));
-    throw new Error(error.detail || 'Prediction failed');
-  }
 
   return response.json();
 }
 
 export async function sendChatMessage(message, lang = 'en') {
-  const response = await fetch(`${API_BASE}/chat`, {
+  const response = await fetchWithRetry(`${API_BASE}/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ message, lang }),
   });
 
-  if (!response.ok) {
-    throw new Error('Chat request failed');
-  }
-
   return response.json();
 }
 
 export async function getFarmZones() {
-  const response = await fetch(`${API_BASE}/zones`);
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch zone data');
-  }
-
+  const response = await fetchWithRetry(`${API_BASE}/zones`);
   return response.json();
 }
-
-

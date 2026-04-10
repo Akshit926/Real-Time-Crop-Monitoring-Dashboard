@@ -8,13 +8,13 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^6.0.1",
-    "typescript": "^6.0.2",
-    "vite": "^8.0.4"
+    "@vitejs/plugin-react": "^5.1.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.12"
   },
   "dependencies": {
     "chart.js": "^4.5.1",
@@ -25,8 +25,5 @@
     "react-chartjs-2": "^5.3.1",
     "react-router-dom": "^7.14.0"
   },
-  "optionalDependencies": {
-    "@rolldown/binding-linux-x64-gnu": "1.0.0-rc.15",
-    "lightningcss-linux-x64-gnu": "1.32.0"
-  }
+  "optionalDependencies": {}
 }
