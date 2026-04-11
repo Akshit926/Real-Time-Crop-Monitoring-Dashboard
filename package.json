@@ -6,7 +6,9 @@
     "backend"
   ],
   "scripts": {
-    "build": "npm run build --workspace frontend"
+    "build": "npm run build --workspace frontend",
+    "docker:up": "docker compose up --build",
+    "docker:down": "docker compose down"
   },
   "engines": {
     "node": ">=22.0.0"

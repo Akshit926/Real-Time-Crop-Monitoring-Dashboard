@@ -31,32 +31,42 @@ AgroVision/
 
 ```
 ## ⚙️ Installation & Setup
-### 1. Backend Setup
+### 1. Team Setup (Recommended: No local Python/TensorFlow install)
+Use Docker so everyone runs the same environment and dependencies.
+
 ```bash
-# Navigate to backend directory
+# from repository root
+docker compose up --build
+```
+
+This starts:
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:8000
+
+To stop:
+
+```bash
+docker compose down
+```
+
+### 2. Local Setup (Optional)
+Use this only if you do not want Docker.
+
+Backend (Python 3.11 recommended):
+```bash
 cd backend
-
-# Install dependencies
 pip install -r requirements.txt
-
-# Start the server
 uvicorn main:app --reload --port 8000
-
 ```
-*The backend will be live at http://localhost:8000. You can view the Interactive API docs at /docs.*
-### 2. Frontend Setup
+
+Frontend:
 ```bash
-# Navigate to frontend directory
 cd frontend
-
-# Install dependencies
 npm install
-
-# Start the development server
 npm run dev
-
 ```
-*Open http://localhost:5173 in your browser.*
+
+Open http://localhost:5173 in your browser.
 ## 🧠 AI Model Approach
 AgroVision now loads the provided fine-tuned `.h5` model directly for inference:
  * **Logic:** The backend resizes uploaded images to the model's expected input, runs the MobileNetV2 classifier, and returns the top label with softmax confidence.
