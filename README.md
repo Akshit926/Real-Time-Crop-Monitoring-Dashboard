@@ -3,34 +3,72 @@ AgroVision is a full-stack, AI-powered agricultural monitoring platform designed
  * **🔍 AI Disease Detection:** Upload or capture images via webcam to identify diseases across the full PlantVillage label set used by the fine-tuned model.
  * **📊 Interactive Analytics:** Real-time data visualization using Chart.js, including disease distribution and health trends.
  * **🗺️ Farm Zone Mapping:** SVG-based interactive map to monitor different sectors of a farm with color-coded health statuses.
- * **🤖 Local AI Chatbot:** A rule-based agricultural knowledge engine supporting 50+ Q&A pairs (No API keys required).
+ * **🤖 AI Chatbot:** Intelligent agricultural assistant with OpenAI integration and local rule-based fallback (50+ Q&A pairs).
+ * **🌦️ Weather Integration:** Real-time weather data from Open-Meteo API with farming advice.
  * **🌐 Bilingual Support:** Seamless toggle between **English** and **Hindi** for localized accessibility.
  * **📱 Responsive Design:** Fully optimized for mobile and desktop with a sleek Dark Mode glassmorphism aesthetic.
 ## 🛠️ Tech Stack
 | Component | Technology |
 |---|---|
-| **Frontend** | React 18, Vite, Tailwind CSS, Framer Motion, Chart.js |
+| **Frontend** | React 19, Vite, TypeScript, Tailwind CSS, Framer Motion, Chart.js, React Router |
 | **Backend** | FastAPI (Python 3.9+), Uvicorn |
 | **AI/ML** | Fine-tuned MobileNetV2, TensorFlow/Keras, Pillow, NumPy |
+| **APIs** | OpenAI (optional), Open-Meteo (weather) |
 | **Icons/UI** | Lucide React, Google Fonts (Inter & Outfit) |
+| **Deployment** | Vercel (serverless functions) |
 ## 📂 Project Structure
 ```text
-AgroVision/
+Crop_Monitoring/
+├── api/
+│   └── index.py             # Vercel serverless API entry point
 ├── backend/
+│   ├── __init__.py          # Package initialization
 │   ├── main.py              # FastAPI entry point & CORS config
-│   ├── model.py             # Simulated CNN Predictor logic
+│   ├── model.py             # CNN Predictor logic with model loading
 │   ├── chatbot.py           # Rule-based Knowledge Engine
+│   ├── ai_chat.py           # OpenAI-powered chat with fallback
+│   ├── weather.py           # Weather service (Open-Meteo API)
+│   ├── crop_model.h5        # Pre-trained MobileNetV2 model
+│   ├── test_predict.py      # Model testing utilities
 │   └── requirements.txt     # Python dependencies
-└── frontend/
-    ├── src/
-    │   ├── components/      # Reusable UI (Sidebar, Chatbot, Stats)
-    │   ├── pages/           # Dashboard, Analyze, FarmMap, Analytics
-    │   ├── context/         # Language & Global State
-    │   └── utils/           # API wrappers & Translations
-    └── vite.config.js       # Proxy configuration
+├── frontend/
+│   ├── index.html           # Main HTML template
+│   ├── package.json         # Frontend dependencies
+│   ├── tsconfig.json        # TypeScript configuration
+│   ├── vite.config.js       # Vite build configuration
+│   ├── public/              # Static assets
+│   └── src/
+│       ├── App.jsx          # Main React app component
+│       ├── main.jsx         # React entry point
+│       ├── main.ts          # TypeScript declarations
+│       ├── index.css        # Global styles
+│       ├── style.css        # Additional styles
+│       ├── assets/          # Asset files
+│       ├── components/      # Reusable UI components
+│       │   ├── AlertTicker.jsx/css
+│       │   ├── Chatbot.jsx/css
+│       │   ├── DetectionCard.jsx/css
+│       │   ├── Sidebar.jsx/css
+│       │   ├── StatsCard.jsx/css
+│       │   └── WeatherPanel.jsx/css
+│       ├── context/         # React context providers
+│       │   └── LanguageContext.jsx
+│       ├── pages/           # Page components
+│       │   ├── Analytics.jsx/css
+│       │   ├── Analyze.jsx/css
+│       │   ├── Dashboard.jsx/css
+│       │   └── FarmMap.jsx/css
+│       └── utils/           # Utility functions
+│           ├── api.js       # API client
+│           └── translations.js # Localization
+├── package.json             # Monorepo root configuration
+├── requirements.txt         # Additional Python deps (if needed)
+├── vercel.json              # Vercel deployment config
+└── README.md                # This file
 
 ```
 ## ⚙️ Installation & Setup
+<<<<<<< HEAD
 ### 1. Team Setup (Recommended: No local Python/TensorFlow install)
 Use Docker so everyone runs the same environment and dependencies.
 
@@ -53,30 +91,97 @@ docker compose down
 Use this only if you do not want Docker.
 
 Backend (Python 3.11 recommended):
+=======
+### Prerequisites
+- Node.js >= 22.0.0
+- Python 3.9+
+- npm or yarn
+
+### 1. Clone and Setup Monorepo
+```bash
+# Install root dependencies
+npm install
+
+# This will install dependencies for both frontend and backend workspaces
+```
+
+### 2. Backend Setup
+>>>>>>> 7152e5c2f81dc7941e7e11a1c566091783068620
 ```bash
 cd backend
+<<<<<<< HEAD
 pip install -r requirements.txt
 uvicorn main:app --reload --port 8000
 ```
 
 Frontend:
+=======
+
+# Install Python dependencies
+pip install -r requirements.txt
+
+# For local development
+uvicorn main:app --reload --port 8000
+```
+*The backend will be live at http://localhost:8000. Interactive API docs available at /docs.*
+
+### 3. Frontend Setup
+>>>>>>> 7152e5c2f81dc7941e7e11a1c566091783068620
 ```bash
 cd frontend
+<<<<<<< HEAD
 npm install
 npm run dev
 ```
 
 Open http://localhost:5173 in your browser.
+=======
+
+# Install dependencies (if not done via monorepo)
+npm install
+
+# Start development server
+npm run dev
+```
+*Open http://localhost:5173 in your browser.*
+
+## 🚀 Deployment
+### Vercel Deployment
+The project is configured for seamless deployment on Vercel:
+
+```bash
+# Install Vercel CLI
+npm install -g vercel
+
+# Deploy
+vercel
+```
+
+The `vercel.json` configuration handles:
+- Frontend build and static file serving
+- Python serverless functions for the API
+- Proper routing for API endpoints
+
+>>>>>>> 7152e5c2f81dc7941e7e11a1c566091783068620
 ## 🧠 AI Model Approach
-AgroVision now loads the provided fine-tuned `.h5` model directly for inference:
- * **Logic:** The backend resizes uploaded images to the model's expected input, runs the MobileNetV2 classifier, and returns the top label with softmax confidence.
- * **Output:** Each prediction includes the crop, disease, confidence, a plain-language reason, and practical treatment steps.
- * **Note:** The backend expects a TensorFlow-compatible Python environment so the `.h5` model can be loaded at runtime.
+AgroVision loads the provided fine-tuned `.h5` MobileNetV2 model for real-time inference:
+ * **Logic:** Images are resized to 224x224, preprocessed for MobileNetV2, and classified using the trained model.
+ * **Output:** Returns crop type, disease, confidence score, explanation, and treatment recommendations.
+ * **Fallback:** If TensorFlow is unavailable, provides simulated responses for development.
+ * **Note:** Requires TensorFlow-compatible environment for full functionality.
+
+## 🤖 Chatbot Features
+- **Primary:** OpenAI GPT integration for intelligent agricultural advice
+- **Fallback:** Local rule-based system with 50+ pre-defined Q&A pairs
+- **Weather-Aware:** Incorporates current weather conditions in responses
+- **Bilingual:** Supports both English and Hindi queries
+
 ## 📈 Dashboard Overview
- * **Dashboard:** High-level overview of total scans and active alerts.
- * **Analyze:** The core utility where users interact with the CNN model via file upload or live camera.
- * **Farm Map:** A visual representation of the physical field divided into manageable zones.
- * **Analytics:** Deep-dive charts showing the "Why" and "When" of crop health fluctuations.
+ * **Dashboard:** Overview of scan history, active alerts, and key metrics.
+ * **Analyze:** Core disease detection interface with file upload and camera capture.
+ * **Farm Map:** Interactive SVG map for zone-based farm monitoring.
+ * **Analytics:** Detailed charts and trends for crop health analysis.
+
 ## 📝 License
 Distributed under the MIT License. See LICENSE for more information.
 **AgroVision** — *Empowering Agriculture through Intelligent Vision.*
