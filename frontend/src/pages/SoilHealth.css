@@ -1,16 +1,15 @@
-/* Soil Health Analysis Page */
+/* ── Soil Health Page ─────────────────────────────────────────────────────── */
 
 .soil-page {
-  max-width: 1200px;
-  padding-bottom: 80px;
+  /* No max-width — fills the full main-content area just like Analytics */
 }
 
+/* ── Header ────────────────────────────────────────────────────────────────── */
 .soil-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 22px;
 }
 
 .soil-header-left {
@@ -32,17 +31,22 @@
   flex-shrink: 0;
 }
 
+/* ── Main Grid — mirrors charts-grid: two equal columns ─────────────────── */
 .soil-grid {
   display: grid;
-  grid-template-columns: minmax(320px, 420px) 1fr;
-  gap: 18px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
   align-items: start;
 }
 
+/* ── Form Card ──────────────────────────────────────────────────────────── */
 .soil-form-card {
-  padding: 22px;
+  padding: 24px;
   border: 1px solid rgba(14, 165, 233, 0.28);
   box-shadow: 0 0 24px rgba(14, 165, 233, 0.08);
+  position: sticky;
+  top: 24px;
+  align-self: start;
 }
 
 .soil-section-title {
@@ -94,11 +98,12 @@
 }
 
 .soil-submit-wrap {
-  margin-top: 16px;
+  margin-top: 20px;
   display: flex;
   justify-content: flex-end;
 }
 
+/* ── Output Column ──────────────────────────────────────────────────────── */
 .soil-output-wrap {
   display: flex;
   flex-direction: column;
@@ -106,14 +111,14 @@
 }
 
 .soil-placeholder {
-  padding: 28px;
-  min-height: 220px;
+  padding: 40px 24px;
+  min-height: 260px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .soil-error-card {
@@ -124,6 +129,7 @@
   border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
+/* ── Report Panel ───────────────────────────────────────────────────────── */
 .soil-report-panel {
   display: flex;
   flex-direction: column;
@@ -131,7 +137,7 @@
 }
 
 .soil-summary {
-  padding: 14px 16px;
+  padding: 16px 20px;
 }
 
 .soil-summary-top {
@@ -142,7 +148,7 @@
 }
 
 .soil-score {
-  font-size: 1.25rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: #7dd3fc;
   font-family: var(--font-display);
@@ -157,6 +163,7 @@
   font-size: 0.82rem;
 }
 
+/* Reasons & Solutions: 2 columns inside the right column */
 .soil-sections-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -173,9 +180,10 @@
   display: grid;
   gap: 8px;
   color: var(--text-secondary);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
 }
 
+/* Crop chips */
 .soil-crop-chips {
   margin-top: 10px;
   display: flex;
@@ -186,7 +194,7 @@
 .soil-crop-chip {
   display: inline-flex;
   align-items: center;
-  padding: 6px 11px;
+  padding: 6px 12px;
   border-radius: var(--radius-full);
   background: rgba(16, 185, 129, 0.14);
   border: 1px solid rgba(16, 185, 129, 0.3);
@@ -195,6 +203,7 @@
   font-weight: 600;
 }
 
+/* Metric cards — 2 columns */
 .soil-metric-grid {
   margin-top: 10px;
   display: grid;
@@ -206,7 +215,7 @@
   background: rgba(15, 23, 42, 0.5);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  padding: 10px 11px;
+  padding: 12px 14px;
 }
 
 .soil-metric-top {
@@ -214,13 +223,15 @@
   justify-content: space-between;
   align-items: center;
   gap: 8px;
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   color: var(--text-primary);
+  font-weight: 600;
 }
 
 .soil-metric-score {
   color: #22d3ee;
   font-weight: 700;
+  font-size: 1rem;
 }
 
 .soil-metric-meta {
@@ -229,11 +240,11 @@
   justify-content: space-between;
   gap: 8px;
   color: var(--text-secondary);
-  font-size: 0.76rem;
+  font-size: 0.78rem;
 }
 
 .soil-metric-note {
-  margin-top: 6px;
+  margin-top: 4px;
   color: var(--text-tertiary);
   font-size: 0.75rem;
 }
@@ -243,8 +254,10 @@
   color: var(--text-secondary);
   white-space: pre-line;
   line-height: 1.7;
+  font-size: 0.88rem;
 }
 
+/* ── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 1024px) {
   .soil-grid {
     grid-template-columns: 1fr;

@@ -68,7 +68,7 @@ export default function SoilHealth() {
 
   return (
     <div className="soil-page">
-      <div className="soil-header animate-fade-in-up">
+      <div className="page-header animate-fade-in-up">
         <div className="soil-header-left">
           <div className="soil-header-icon">
             <FlaskConical size={24} />

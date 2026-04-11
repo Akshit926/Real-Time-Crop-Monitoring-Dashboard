@@ -14,6 +14,7 @@ import FieldJournal from './pages/FieldJournal';
 import DiseaseLibrary from './pages/DiseaseLibrary';
 import TaskManager from './pages/TaskManager';
 import SoilHealth from './pages/SoilHealth';
+import Summarizer from './pages/Summarizer';
 
 
 import './index.css';
@@ -48,6 +49,7 @@ function App() {
             <Route path="/journal" element={<FieldJournal />} />
             <Route path="/library" element={<DiseaseLibrary />} />
             <Route path="/tasks" element={<TaskManager />} />
+            <Route path="/summarizer" element={<Summarizer />} />
             <Route path="*" element={<Dashboard />} />
           </Routes>
         </main>

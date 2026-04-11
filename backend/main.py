@@ -478,6 +478,237 @@ async def delete_task(task_id: str):
         raise HTTPException(status_code=404, detail="Task not found.")
 
 
+# ── Soil Health Analysis ─────────────────────────────────────────────────────
+
+class SoilHealthRequest(BaseModel):
+    nitrogen: float          # kg/ha  recommended: 80–120
+    phosphorus: float        # kg/ha  recommended: 30–60
+    potassium: float         # kg/ha  recommended: 120–200
+    ph: float                # 0–14   optimal: 6.0–7.5
+    moisture: float          # %      optimal: 40–70
+    organic_carbon: Optional[float] = None   # %  good: >1.5
+    ec: Optional[float] = None               # dS/m optimal: 0–2
+
+
+def _score_param(value: float, low_crit: float, low_ok: float, high_ok: float, high_crit: float) -> tuple[int, str]:
+    """Return (0-100 score, status string) for a single parameter."""
+    if value < low_crit or value > high_crit:
+        return 20, "critical"
+    if value < low_ok or value > high_ok:
+        return 55, "moderate"
+    return 100, "healthy"
+
+
+def _analyze_soil(req: SoilHealthRequest) -> dict:
+    metrics: dict[str, dict] = {}
+    reasons: list[str] = []
+    solutions: list[str] = []
+
+    # ── Nitrogen ──────────────────────────────────────────────────
+    n_score, n_status = _score_param(req.nitrogen, 20, 60, 140, 250)
+    metrics["nitrogen"] = {
+        "label": "Nitrogen (N)",
+        "value": req.nitrogen,
+        "unit": "kg/ha",
+        "score": n_score,
+        "status": n_status,
+        "note": "Optimal: 60–140 kg/ha",
+    }
+    if req.nitrogen < 60:
+        reasons.append(f"Low nitrogen ({req.nitrogen} kg/ha) — plants may show yellowing and stunted growth.")
+        solutions.append("Apply urea or ammonium sulfate at 50–80 kg/ha. Consider split dressing.")
+    elif req.nitrogen > 140:
+        reasons.append(f"Excess nitrogen ({req.nitrogen} kg/ha) — can cause excessive leaf growth and disease susceptibility.")
+        solutions.append("Reduce nitrogen inputs and flush with irrigation to dilute excess.")
+
+    # ── Phosphorus ────────────────────────────────────────────────
+    p_score, p_status = _score_param(req.phosphorus, 5, 25, 70, 120)
+    metrics["phosphorus"] = {
+        "label": "Phosphorus (P)",
+        "value": req.phosphorus,
+        "unit": "kg/ha",
+        "score": p_score,
+        "status": p_status,
+        "note": "Optimal: 25–70 kg/ha",
+    }
+    if req.phosphorus < 25:
+        reasons.append(f"Low phosphorus ({req.phosphorus} kg/ha) — affects root development and flowering.")
+        solutions.append("Apply single super phosphate (SSP) or DAP at 40–60 kg/ha.")
+    elif req.phosphorus > 70:
+        reasons.append(f"High phosphorus ({req.phosphorus} kg/ha) — may block zinc and iron uptake.")
+        solutions.append("Avoid further phosphorus applications for 1–2 seasons; add zinc sulfate if needed.")
+
+    # ── Potassium ─────────────────────────────────────────────────
+    k_score, k_status = _score_param(req.potassium, 30, 100, 220, 400)
+    metrics["potassium"] = {
+        "label": "Potassium (K)",
+        "value": req.potassium,
+        "unit": "kg/ha",
+        "score": k_score,
+        "status": k_status,
+        "note": "Optimal: 100–220 kg/ha",
+    }
+    if req.potassium < 100:
+        reasons.append(f"Low potassium ({req.potassium} kg/ha) — reduces stress resistance and fruit quality.")
+        solutions.append("Apply MOP (Muriate of Potash) at 50–80 kg/ha alongside regular irrigation.")
+    elif req.potassium > 220:
+        reasons.append(f"High potassium ({req.potassium} kg/ha) — may antagonise magnesium and calcium.")
+        solutions.append("Skip potassium fertilisation for 1 season or leach with irrigation.")
+
+    # ── pH ────────────────────────────────────────────────────────
+    ph_score, ph_status = _score_param(req.ph, 4.5, 5.8, 7.5, 9.0)
+    metrics["ph"] = {
+        "label": "Soil pH",
+        "value": req.ph,
+        "unit": "",
+        "score": ph_score,
+        "status": ph_status,
+        "note": "Optimal: 5.8–7.5",
+    }
+    if req.ph < 5.8:
+        reasons.append(f"Acidic soil (pH {req.ph}) — reduces nutrient availability, especially phosphorus.")
+        solutions.append("Apply agricultural lime (CaCO₃) at 1–3 t/ha to raise pH gradually.")
+    elif req.ph > 7.5:
+        reasons.append(f"Alkaline soil (pH {req.ph}) — can lock up iron, manganese, and zinc.")
+        solutions.append("Apply elemental sulfur or acidifying fertilisers like ammonium sulfate.")
+
+    # ── Moisture ─────────────────────────────────────────────────
+    m_score, m_status = _score_param(req.moisture, 10, 35, 75, 95)
+    metrics["moisture"] = {
+        "label": "Soil Moisture",
+        "value": req.moisture,
+        "unit": "%",
+        "score": m_score,
+        "status": m_status,
+        "note": "Optimal: 35–75%",
+    }
+    if req.moisture < 35:
+        reasons.append(f"Low soil moisture ({req.moisture}%) — plants may wilt and nutrient uptake will suffer.")
+        solutions.append("Schedule irrigation immediately, preferably drip for efficiency.")
+    elif req.moisture > 75:
+        reasons.append(f"High soil moisture ({req.moisture}%) — risk of root rot and anaerobic conditions.")
+        solutions.append("Improve drainage with raised beds or subsurface drains. Hold irrigation.")
+
+    # ── Organic Carbon (optional) ─────────────────────────────────
+    if req.organic_carbon is not None:
+        oc_score, oc_status = _score_param(req.organic_carbon, 0.2, 1.0, 3.5, 6.0)
+        metrics["organic_carbon"] = {
+            "label": "Organic Carbon",
+            "value": req.organic_carbon,
+            "unit": "%",
+            "score": oc_score,
+            "status": oc_status,
+            "note": "Optimal: 1–3.5%",
+        }
+        if req.organic_carbon < 1.0:
+            reasons.append(f"Low organic carbon ({req.organic_carbon}%) — poor soil structure and microbial activity.")
+            solutions.append("Add compost, farmyard manure, or green manure crops (e.g., legumes).")
+
+    # ── Electrical Conductivity (optional) ───────────────────────
+    if req.ec is not None:
+        ec_score, ec_status = _score_param(req.ec, 0, 0, 2.0, 4.0)
+        metrics["ec"] = {
+            "label": "Electrical Conductivity",
+            "value": req.ec,
+            "unit": "dS/m",
+            "score": ec_score,
+            "status": ec_status,
+            "note": "Optimal: 0–2 dS/m",
+        }
+        if req.ec > 2.0:
+            reasons.append(f"High EC ({req.ec} dS/m) — soil salinity may reduce germination and crop yield.")
+            solutions.append("Apply heavy irrigation to leach salts. Use gypsum for sodic soils.")
+
+    # ── Overall score & status ────────────────────────────────────
+    all_scores = [m["score"] for m in metrics.values()]
+    avg_score = int(sum(all_scores) / max(len(all_scores), 1))
+
+    if avg_score >= 75:
+        health_status_code = "healthy"
+        health_status = "Healthy Soil"
+    elif avg_score >= 45:
+        health_status_code = "moderate"
+        health_status = "Moderate — Needs Attention"
+    else:
+        health_status_code = "critical"
+        health_status = "Critical — Immediate Action Needed"
+
+    if not reasons:
+        reasons = ["All measured soil parameters are within the recommended range."]
+        solutions = ["Maintain current fertilisation and irrigation schedule. Re-test in 4–6 weeks."]
+
+    # ── Crop suggestions ─────────────────────────────────────────
+    crop_map: list[tuple[str, list[str]]] = [
+        ("Rice",       [lambda n, p, k, ph, m: ph >= 5.5 and ph <= 7.0 and m >= 50]),
+        ("Wheat",      [lambda n, p, k, ph, m: ph >= 6.0 and ph <= 7.5 and m >= 40 and m <= 70]),
+        ("Maize",      [lambda n, p, k, ph, m: ph >= 5.8 and ph <= 7.0 and n >= 60]),
+        ("Tomato",     [lambda n, p, k, ph, m: ph >= 6.0 and ph <= 6.8 and p >= 25]),
+        ("Potato",     [lambda n, p, k, ph, m: ph >= 5.5 and ph <= 6.5 and k >= 100]),
+        ("Chickpea",   [lambda n, p, k, ph, m: ph >= 6.0 and ph <= 8.0 and m <= 65]),
+        ("Soybean",    [lambda n, p, k, ph, m: ph >= 6.0 and ph <= 7.0 and p >= 20]),
+        ("Sugarcane",  [lambda n, p, k, ph, m: ph >= 6.0 and ph <= 7.5 and m >= 50 and k >= 100]),
+        ("Cotton",     [lambda n, p, k, ph, m: ph >= 6.0 and ph <= 8.0 and m >= 40]),
+        ("Mustard",    [lambda n, p, k, ph, m: ph >= 6.0 and ph <= 7.5]),
+        ("Banana",     [lambda n, p, k, ph, m: ph >= 6.0 and ph <= 7.5 and m >= 50 and k >= 150]),
+        ("Onion",      [lambda n, p, k, ph, m: ph >= 6.0 and ph <= 7.0 and p >= 20]),
+    ]
+
+    suggested: list[str] = []
+    n, p, k, ph, m = req.nitrogen, req.phosphorus, req.potassium, req.ph, req.moisture
+    for crop_name, checks in crop_map:
+        if all(c(n, p, k, ph, m) for c in checks):
+            suggested.append(crop_name)
+    if not suggested:
+        suggested = ["Leguminous Cover Crop", "Green Manure"]
+
+    # ── Plain-text report ─────────────────────────────────────────
+    report_lines = [
+        f"Soil Health Report — Score: {avg_score}/100 ({health_status})",
+        "",
+        f"Nitrogen: {req.nitrogen} kg/ha | Phosphorus: {req.phosphorus} kg/ha | Potassium: {req.potassium} kg/ha",
+        f"pH: {req.ph} | Moisture: {req.moisture}%"
+        + (f" | Organic Carbon: {req.organic_carbon}%" if req.organic_carbon is not None else "")
+        + (f" | EC: {req.ec} dS/m" if req.ec is not None else ""),
+        "",
+        "Key Findings:",
+        *[f"• {r}" for r in reasons],
+        "",
+        "Recommended Actions:",
+        *[f"• {s}" for s in solutions],
+        "",
+        f"Suggested Crops: {', '.join(suggested)}",
+    ]
+    report = "\n".join(report_lines)
+
+    return {
+        "health_status": health_status,
+        "health_status_code": health_status_code,
+        "score": avg_score,
+        "reasons": reasons,
+        "solutions": solutions,
+        "suggested_crops": suggested,
+        "metric_breakdown": metrics,
+        "report": report,
+        "report_source": "local",
+    }
+
+
+@app.post("/soil-health")
+async def soil_health_endpoint(req: SoilHealthRequest):
+    """
+    Analyse soil NPK, pH, moisture and return a structured health report.
+
+    Returns: health_status, score, reasons, solutions, suggested_crops,
+             metric_breakdown, report text, and report_source.
+    """
+    try:
+        result = _analyze_soil(req)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Soil analysis failed: {str(e)}")
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+

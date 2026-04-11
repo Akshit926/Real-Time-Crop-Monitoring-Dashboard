@@ -12,7 +12,8 @@ import {
   BookOpen,
   BookMarked,
   ClipboardList,
-  FlaskConical
+  FlaskConical,
+  FileText
 } from 'lucide-react';
 import { useState } from 'react';
 import './Sidebar.css';
@@ -26,6 +27,7 @@ const navItems = [
   { path: '/journal', icon: BookOpen, labelKey: 'nav_journal' },
   { path: '/library', icon: BookMarked, labelKey: 'nav_library' },
   { path: '/tasks', icon: ClipboardList, labelKey: 'nav_tasks' },
+  { path: '/summarizer', icon: FileText, labelKey: 'nav_summarizer' },
 ];
 
 export default function Sidebar() {

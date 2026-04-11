@@ -8,6 +8,7 @@ import {
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { setFeatureContext } from '../utils/featureContext';
+import { pushScanResult } from '../utils/scanHistory';
 import './Analyze.css';
 
 export default function Analyze() {
@@ -50,6 +51,8 @@ export default function Analyze() {
     try {
       const data = await predictDisease(image);
       setResult(data);
+      // Persist to Summarizer history
+      pushScanResult(data, imagePreview);
       setFeatureContext('analyze', {
         crop: data.crop,
         status: data.status,
