@@ -22,7 +22,7 @@ param(
     [string]$RepoName = "agrovision-repo"
 )
 
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Continue"
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan
