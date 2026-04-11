@@ -1,0 +1,434 @@
+/* ═══════════════════════════════════════════════════════════════
+   Disease & Pest Library — Styles
+   ═══════════════════════════════════════════════════════════════ */
+
+.library-page {
+  max-width: 1100px;
+  padding-bottom: 80px;
+}
+
+/* ── Header ─────────────────────────────────────────────────── */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.library-header-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.35);
+  flex-shrink: 0;
+}
+
+.library-count-badge {
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
+  background: var(--accent-subtle);
+  border: 1px solid var(--border-accent);
+  color: var(--accent-primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ── Search Bar ─────────────────────────────────────────────── */
+.library-search-wrap {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.library-search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-tertiary);
+  pointer-events: none;
+}
+
+.library-search {
+  width: 100%;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  padding: 12px 16px 12px 46px;
+  font-size: 0.925rem;
+  backdrop-filter: var(--glass-blur);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.library-search:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--accent-subtle);
+}
+
+.library-search::placeholder {
+  color: var(--text-tertiary);
+}
+
+.library-search-clear {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: 50%;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.library-search-clear:hover {
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+}
+
+/* ── Filters ────────────────────────────────────────────────── */
+.library-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 20px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  backdrop-filter: var(--glass-blur);
+  margin-bottom: 28px;
+}
+
+.library-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.library-filter-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  min-width: 100px;
+}
+
+.library-filter-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.library-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+}
+
+.library-pill:hover {
+  border-color: var(--border-medium);
+  color: var(--text-primary);
+}
+
+.library-pill.active {
+  background: var(--accent-subtle);
+  border-color: var(--border-accent);
+  color: var(--accent-primary);
+}
+
+.lib-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── Disease Card Grid ──────────────────────────────────────── */
+.library-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.library-card {
+  border-left: 4px solid transparent;
+  border-radius: var(--radius-lg) !important;
+  padding: 0 !important;
+  overflow: hidden;
+  transition: transform var(--transition-base), box-shadow var(--transition-base) !important;
+}
+
+.library-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4) !important;
+}
+
+.library-card-open {
+  border-color: inherit;
+}
+
+/* Card Header (clickable) */
+.library-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px 22px 0;
+  cursor: pointer;
+}
+
+.library-card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.library-card-title-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.library-card-name-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.library-card-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  font-family: var(--font-display);
+  color: var(--text-primary);
+}
+
+.library-sev-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.library-card-pathogen {
+  font-size: 0.78rem;
+  color: var(--text-tertiary);
+  font-style: italic;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.library-card-crops {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.library-crop-tag {
+  padding: 2px 9px;
+  border-radius: var(--radius-full);
+  font-size: 0.7rem;
+  font-weight: 500;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+}
+
+.library-card-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.library-spread {
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.library-expand-btn {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  transition: all var(--transition-fast);
+}
+
+.library-expand-btn:hover {
+  background: var(--border-medium);
+  color: var(--text-primary);
+}
+
+/* Description */
+.library-card-desc {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  padding: 12px 22px 0;
+}
+
+/* Expanded details */
+.library-card-details {
+  margin: 16px 22px 0;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 16px;
+}
+
+.library-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.library-detail-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.library-detail-heading {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+}
+
+.library-detail-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.library-detail-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.lib-bullet {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+
+/* Toggle button */
+.library-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 12px 22px;
+  margin-top: 16px;
+  background: transparent;
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-tertiary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: color var(--transition-fast), background var(--transition-fast);
+  justify-content: center;
+}
+
+.library-toggle-btn:hover {
+  background: var(--accent-subtle);
+  color: var(--accent-primary);
+}
+
+/* ── Empty State ─────────────────────────────────────────────── */
+.library-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 72px 20px;
+  text-align: center;
+  color: var(--text-tertiary);
+}
+
+.library-empty h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-top: 8px;
+}
+
+.library-empty p {
+  font-size: 0.875rem;
+  max-width: 300px;
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .library-filter-group {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .library-filter-label {
+    min-width: auto;
+  }
+
+  .library-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .library-card-header {
+    flex-wrap: wrap;
+  }
+
+  .library-card-meta {
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    margin-top: 8px;
+  }
+}

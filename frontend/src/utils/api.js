@@ -76,3 +76,50 @@ export async function getWeather(params = {}) {
 
   return response.json();
 }
+
+// ── Field Journal ──────────────────────────────────────────────────
+
+export async function getJournalEntries() {
+  const response = await fetchWithRetry(`${API_BASE}/journal`);
+  return response.json();
+}
+
+export async function addJournalEntry(entry) {
+  const response = await fetchWithRetry(`${API_BASE}/journal`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(entry),
+  });
+  return response.json();
+}
+
+export async function deleteJournalEntry(id) {
+  await fetchWithRetry(`${API_BASE}/journal/${id}`, { method: 'DELETE' });
+}
+
+// ── Farm Task Manager ──────────────────────────────────────────────
+
+export async function getTasks() {
+  const response = await fetchWithRetry(`${API_BASE}/tasks`);
+  return response.json();
+}
+
+export async function addTask(task) {
+  const response = await fetchWithRetry(`${API_BASE}/tasks`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(task),
+  });
+  return response.json();
+}
+
+export async function updateTaskStatus(id, status) {
+  const response = await fetchWithRetry(`${API_BASE}/tasks/${id}/status?status=${status}`, {
+    method: 'PATCH',
+  });
+  return response.json();
+}
+
+export async function deleteTask(id) {
+  await fetchWithRetry(`${API_BASE}/tasks/${id}`, { method: 'DELETE' });
+}
