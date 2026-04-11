@@ -28,7 +28,7 @@ export default function Dashboard() {
     setWeatherError('');
 
     const fetchWeather = (params = {}) => {
-      getWeather({ lang, location: 'Your Farm', ...params })
+      getWeather({ lang, location: t('weather_farm_label'), ...params })
         .then(setWeather)
         .catch(() => setWeatherError(t('weather_error')))
         .finally(() => setWeatherLoading(false));

@@ -54,6 +54,32 @@ class ChatResponse(BaseModel):
     source: str = "local"
 
 
+class DiseaseRiskResponse(BaseModel):
+    level_code: str
+    level: str
+    score: int
+    likely_diseases: list[str]
+    reason: str
+
+
+class IrrigationResponse(BaseModel):
+    level_code: str
+    level: str
+    should_water: bool
+    recommended_mm: float
+    recommended_liters_m2: float
+    rain_mm_next_24h: float
+    recommendation: str
+
+
+class ForecastPointResponse(BaseModel):
+    time: str
+    label: str
+    temperature_c: int
+    precipitation_probability: int
+    rain_mm: float
+
+
 class WeatherResponse(BaseModel):
     location: str
     latitude: float
@@ -62,8 +88,12 @@ class WeatherResponse(BaseModel):
     wind_kph: int
     humidity: int
     precipitation_probability: int
+    rain_mm_next_24h: float
     condition: str
     advice: str
+    disease_risk: DiseaseRiskResponse
+    irrigation: IrrigationResponse
+    forecast_next_hours: list[ForecastPointResponse]
     source: str
 
 

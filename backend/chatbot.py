@@ -165,6 +165,24 @@ DEFAULT_RESPONSES = {
     ]
 }
 
+PROJECT_SUMMARY = {
+    "en": (
+        "AgroVision is a real-time crop monitoring platform. It combines a React + Vite frontend with a FastAPI backend "
+        "to analyze crop leaf images, detect diseases, and provide treatment guidance. The project includes a farm zone map, "
+        "analytics dashboards, weather-aware recommendations, and a bilingual assistant (English/Hindi) for field support."
+    ),
+    "hi": (
+        "AgroVision एक रियल-टाइम फसल मॉनिटरिंग प्लेटफॉर्म है। इसमें React + Vite frontend और FastAPI backend मिलकर "
+        "फसल पत्तियों की तस्वीरों का विश्लेषण करते हैं, रोग पहचानते हैं और उपचार सलाह देते हैं। इसमें farm zone map, "
+        "analytics dashboard, मौसम-आधारित सुझाव और English/Hindi द्विभाषी सहायक शामिल हैं।"
+    ),
+}
+
+OUT_OF_SCOPE_RESPONSES = {
+    "en": "I can only answer AgroVision project and crop-monitoring related questions. Try asking about disease analysis, farm zones, weather insights, or project summary.",
+    "hi": "मैं केवल AgroVision प्रोजेक्ट और फसल मॉनिटरिंग से जुड़े सवालों का जवाब दे सकता हूं। आप रोग विश्लेषण, फार्म ज़ोन, मौसम जानकारी या प्रोजेक्ट सारांश पूछ सकते हैं।",
+}
+
 
 class AgriChatbot:
     """
@@ -195,6 +213,12 @@ class AgriChatbot:
         if best_score > 0 and best_responses:
             return random.choice(best_responses)
         return None
+
+    def get_project_summary(self, lang: str = "en") -> str:
+        return PROJECT_SUMMARY.get(lang, PROJECT_SUMMARY["en"])
+
+    def get_out_of_scope_response(self, lang: str = "en") -> str:
+        return OUT_OF_SCOPE_RESPONSES.get(lang, OUT_OF_SCOPE_RESPONSES["en"])
 
     def get_response(self, message: str, lang: str = "en") -> str:
         """
