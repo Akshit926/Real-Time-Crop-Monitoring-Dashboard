@@ -1,1 +1,261 @@
-## AgroVision — AI-Powered Crop Monitoring DashboardOfficial Submission for the Gemini & Gen AI HackathonTheme: Building the Future of Maharashtra with Generative AIFocus: Scalable, Production-Ready AI for Smart Governance & Agri-Tech1. Executive SummaryAgroVision is a next-generation agricultural monitoring ecosystem designed to stabilize Maharashtra’s agricultural economy. By merging Gemini 3 Flash's advanced reasoning with specialized Computer Vision, we provide farmers in regions like Vidarbha and Konkan with a digital "Scientific Extension Officer" in their pocket. The solution integrates with state data exchanges to move beyond simple detection into proactive, government-aligned crop management.2. Technical Framework & Compliance (Section 1 Alignment)A. Core AI IntegrationGemini 3 Flash API: Serves as the primary multimodal reasoning engine. It processes complex farm queries, interprets "Field Journal" trends, and generates treatment plans.Gemma 4 (31B-it): Deployed via Cloud Run (NVIDIA RTX 6000 GPUs) for localized, high-security inference. Used for sensitive data processing and offline-ready logic in low-connectivity zones.Google Vision API: Powers the OCR engine for scanning government-issued Soil Health Cards and pesticide labels to prevent counterfeit usage.Google ADK (Agent Development Kit): Orchestrates "Agri-Agents" that autonomously interface with the MahaAgriX (Data Exchange) to fetch real-time Mandi prices.Vertex AI Managed Database: Cloud Spanner used for globally consistent farm data, ensuring sub-second latency for users across all 36 districts.B. Mandatory Deployment ArchitectureHosting: Fully containerized on Google Cloud Run for serverless scaling.Database: Cloud SQL (PostgreSQL) with Vertex AI Vector Search for RAG-based grounding.DevOps: Infrastructure as Code (IaC) managed via Terraform for "DevOps Excellence" bonus.3. Project Documentation (Section 3 Template)SectionDescriptionProject TitleAgroVision — MahaAgri AI SentinelProblem StatementMaharashtra loses 25-30% of crop yield annually to pests and climate stress. Existing tools lack vernacular support (Marathi) and integration with state government subsidies/advice.AI ComponentGemini 3 Flash (Reasoning), Gemma 4 (Localization), Google Vision (OCR), Vertex AI (Inference).ArchitectureReact 19 Frontend → FastAPI Backend (Cloud Run) → Vertex AI Agent Engine → MahaAgriX APIs.Deployment URLhttps://agrovision-mh-2026.aiexpo.runGIT Hubhttps://github.com/YourTeam/AgroVision-Maha4. Implementation DetailsRegional Specialized ModulesThe Hapus (Mango) Sentinel: Specialized vision prompts for the Konkan belt to detect spongy tissue disease.The Cotton Guard: Integrated pest management for Vidarbha, utilizing Gemini 3 to translate technical PDF research into rural Marathi dialects.Smart Governance & Policy AlignmentMahaAgri-AI Policy 2025-29: AgroVision acts as a Digital Public Infrastructure (DPI) tool. It creates a "traceability loop" by logging every disease detection into the MahaAgriX, helping the government track pest outbreaks in real-time.Bilingual Multimodal Chat: Farmers can record a Marathi voice note; Gemini 3 Flash Live processes the audio, analyzes the attached leaf photo, and speaks back a treatment plan in Marathi.5. Technical Stack BreakdownComponentTechnologyFrontendReact 19, Vite, Tailwind CSS (Glassmorphism UI).BackendFastAPI (Python 3.12), Uvicorn.AI ReasoningGemini 3 Flash (1M Context Window).Local LLMGemma 4 for edge-case reasoning.OrchestrationGoogle ADK (Agentic workflows).CI/CDGoogle Cloud Build + GitHub Actions.SecuritySecret Manager, Cloud DLP API (to mask farmer PII).6. Evaluation Criteria Checklist (Section 4 Alignment)Innovation: First-in-class use of Gemma 4 for localized agricultural logic.Technical Depth: Multi-agent architecture using Google ADK and Vector Search.Scalability: Uses GKE Inference Gateway to handle up to 100,000 concurrent farm scans.Impact: Directly supports the Maharashtra government's goal of increasing farmer income via AI-driven precision.7. Deployment Instructions for JudgesEnvironment: Ensure the Google Cloud Project has vertexai.googleapis.com and run.googleapis.com enabled.API Keys: Configured via Secret Manager (Key: GEMINI_API_KEY).Launch:Bashgcloud run deploy agrovision --source . --region asia-south1 --allow-unauthent
+# 🌿 AgroVision — AI-Powered Crop Monitoring Dashboard
+
+### 🚀 Innovate Maharashtra: Gemini & Gen AI Hackathon 2026 Submission
+
+---
+
+## 🧠 Executive Summary
+
+AgroVision is a **full-stack AI-powered agricultural platform** designed to help farmers detect crop diseases, monitor farm health, and receive intelligent advisory in real-time.
+
+By combining **Computer Vision (CNN) + Generative AI (Gemini)**, AgroVision acts as a **digital agronomist**, delivering scalable and multilingual farming intelligence across Maharashtra.
+
+---
+
+## 🎯 Problem Statement
+
+Farmers in Maharashtra face major challenges:
+
+* 🌾 25–30% crop loss due to undetected diseases
+* 🌦️ Unpredictable climate conditions
+* 👨‍🌾 Limited expert access in rural regions
+* 🗣️ Lack of vernacular (Hindi/Marathi) tools
+
+👉 AgroVision solves this using **AI-driven disease detection + smart advisory system**.
+
+---
+
+## 🤖 AI Component (Technical Compliance)
+
+AgroVision integrates multiple Google AI technologies:
+
+* **Gemini 2.0 Flash API** → AI chatbot & reasoning
+* **Google Vision API** → Image preprocessing & OCR
+* **Vertex AI** → Model deployment & inference
+* **MobileNetV2 CNN** → Disease detection model
+* **Google AI SDK** → Backend integration
+
+---
+
+## 🏗️ Architecture Overview
+
+```
+User (Web App)
+      ↓
+React Frontend (Vite)
+      ↓
+FastAPI Backend (Cloud Run)
+      ↓
+Vertex AI + Gemini API
+      ↓
+Response (Prediction + Advice)
+```
+
+---
+
+## ⚙️ Features
+
+### 🔍 AI Disease Detection
+
+* Upload or capture crop images
+* CNN model predicts disease
+* Outputs:
+
+  * Disease name
+  * Confidence score
+  * Treatment suggestions
+
+---
+
+### 🤖 AI Chatbot (Gemini Powered)
+
+* Multilingual (English + Hindi + Marathi-ready)
+* Context-aware farming advice
+* Weather-integrated responses
+
+---
+
+### 📊 Analytics Dashboard
+
+* Disease trends
+* Farm insights
+* Chart.js visualizations
+
+---
+
+### 🌦️ Weather Integration
+
+* Real-time data from Open-Meteo API
+* Smart recommendations (e.g., irrigation/spraying alerts)
+
+---
+
+### 📓 Field Journal
+
+* Track observations
+* Add notes, weather, tags
+* Useful for subsidies
+
+---
+
+### 🌿 Disease Library
+
+* Searchable disease database
+* Symptoms, causes, treatment
+
+---
+
+### ✅ Task Manager
+
+* Schedule farm activities
+* Track progress
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer      | Technology                     |
+| ---------- | ------------------------------ |
+| Frontend   | React 19, Vite, Chart.js       |
+| Backend    | FastAPI, Python                |
+| AI Model   | MobileNetV2 (TensorFlow/Keras) |
+| AI APIs    | Gemini, Google Vision          |
+| Deployment | Cloud Run / Vercel             |
+| Database   | Cloud SQL                      |
+
+---
+
+## 📂 Project Structure
+
+```
+Crop_Monitoring/
+├── backend/
+├── frontend/
+├── api/
+├── README.md
+```
+
+---
+
+## ⚙️ Installation & Setup
+
+### Option A — Docker
+
+```bash
+docker compose up --build
+```
+
+Frontend: http://localhost:5173
+Backend: http://localhost:8000
+
+---
+
+### Option B — Local Setup
+
+#### Backend
+
+```bash
+cd backend
+pip install -r requirements.txt
+uvicorn main:app --reload
+```
+
+#### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+---
+
+## 🔐 Environment Variables
+
+Create `.env`:
+
+```
+GOOGLE_API_KEY=your_key
+GOOGLE_MODEL=gemini-2.0-flash
+```
+
+---
+
+## 🚀 Deployment (GCP - Required)
+
+```bash
+gcloud run deploy agrovision \
+--source . \
+--region asia-south1 \
+--allow-unauthenticated
+```
+
+---
+
+## 🌐 API Endpoints
+
+| Method | Endpoint | Description       |
+| ------ | -------- | ----------------- |
+| GET    | /health  | Health check      |
+| POST   | /predict | Disease detection |
+| POST   | /chat    | AI chatbot        |
+| GET    | /weather | Weather           |
+| GET    | /journal | Logs              |
+| POST   | /tasks   | Task manager      |
+
+---
+
+## 📊 Evaluation Criteria Alignment
+
+| Criteria        | Implementation           |
+| --------------- | ------------------------ |
+| Innovation      | Gemini + CNN integration |
+| Technical Depth | Multi-AI architecture    |
+| Scalability     | Cloud Run deployment     |
+| Impact          | Farmer-centric solution  |
+
+---
+
+## 🌍 Smart Governance Impact
+
+* Maharashtra-ready system
+* Vernacular AI support
+* Scalable to millions of farmers
+* Future integration with government systems
+
+---
+
+## 🔐 Security
+
+* API keys secured
+* No hardcoded credentials
+* Production-ready backend
+
+---
+
+## 🛣️ Future Scope
+
+* 📱 Mobile App
+* 🗣️ Voice-based AI (Marathi)
+* 📡 Satellite crop monitoring
+* 🤖 AI Agents (Google ADK)
+
+---
+
+## 🔗 GitHub Repository
+
+https://github.com/Akshit926/Real-Time-Crop-Monitoring-Dashboard
+
+---
+
+## 🏁 Final Pitch
+
+**“AgroVision transforms smartphones into intelligent farming assistants, enabling data-driven agriculture across Maharashtra using AI.”**
+
+---
+
+## 📝 License
+
+MIT License
+
+---
