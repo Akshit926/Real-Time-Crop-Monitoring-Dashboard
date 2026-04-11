@@ -24,7 +24,7 @@ export default function AlertTicker() {
 
   return (
     <div className="alert-ticker">
-      <div className="alert-ticker-label">LIVE</div>
+      <div className="alert-ticker-label">{t('alert_live')}</div>
       <div className="alert-ticker-content">
         <div
           className="alert-ticker-track"

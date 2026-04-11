@@ -1,7 +1,11 @@
+import { useLanguage } from '../context/LanguageContext';
 import './DetectionCard.css';
 
-export default function DetectionCard({ crop, disease, confidence, status, timestamp, index = 0 }) {
-  const statusClass = status === 'Healthy' ? 'badge-healthy' : 'badge-critical';
+export default function DetectionCard({ crop, disease, confidence, status, statusCode, timestamp, index = 0 }) {
+  const { t } = useLanguage();
+  const normalizedStatus = (statusCode || status || '').toString().toLowerCase();
+  const isHealthy = normalizedStatus === 'healthy';
+  const statusClass = isHealthy ? 'badge-healthy' : 'badge-critical';
 
   return (
     <div
@@ -19,19 +23,19 @@ export default function DetectionCard({ crop, disease, confidence, status, times
             <div className="detection-card-time">{timestamp}</div>
           </div>
         </div>
-        <span className={`badge ${statusClass}`}>{status}</span>
+        <span className={`badge ${statusClass}`}>{isHealthy ? t('healthy') : t('diseased')}</span>
       </div>
 
-      {disease && disease !== 'None' && (
+      {disease && disease !== t('none') && disease !== 'None' && (
         <div className="detection-card-disease">
-          <span className="detection-card-disease-label">Disease:</span>
+          <span className="detection-card-disease-label">{t('detection_disease_label')}</span>
           <span className="detection-card-disease-name">{disease}</span>
         </div>
       )}
 
       <div className="detection-card-confidence">
         <div className="detection-card-confidence-header">
-          <span>Confidence</span>
+          <span>{t('confidence')}</span>
           <span className="detection-card-confidence-value">{confidence}%</span>
         </div>
         <div className="progress-bar">

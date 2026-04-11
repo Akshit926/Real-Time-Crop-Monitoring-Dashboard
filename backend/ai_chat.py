@@ -1,22 +1,26 @@
-"""AI-assisted chat service with Groq support and graceful local fallback."""
+"""AI-assisted chat service with Google/Groq support and graceful local fallback."""
 
 from __future__ import annotations
 
 import json
 import os
+from pathlib import Path
 from typing import Any
 from urllib.request import Request, urlopen
 
 try:
     from dotenv import load_dotenv
 
-    load_dotenv()
+    current_dir = Path(__file__).resolve().parent
+    load_dotenv(current_dir.parent / ".env")
+    load_dotenv(current_dir / ".env")
 except Exception:
     pass
 
 
 OPENAI_API_URL = "https://api.openai.com/v1/chat/completions"
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
+GOOGLE_API_URL = "https://generativelanguage.googleapis.com/v1beta/models"
 
 PROJECT_KEYWORDS = {
     "agrovision",
@@ -106,23 +110,54 @@ def _fallback_with_context(chatbot, message: str, lang: str, weather: dict[str, 
     return response, "local"
 
 
-def get_ai_chat_response(chatbot, message: str, lang: str = "en", weather: dict[str, Any] | None = None) -> tuple[str, str]:
+def _extract_google_text(body: dict[str, Any]) -> str:
+    candidates = body.get("candidates", [])
+    if not candidates:
+        return ""
+
+    parts = candidates[0].get("content", {}).get("parts", [])
+    text_chunks = [part.get("text", "").strip() for part in parts if part.get("text")]
+    return "\n".join(chunk for chunk in text_chunks if chunk).strip()
+
+
+def _request_google_response(message: str, lang: str, weather: dict[str, Any] | None) -> str:
+    api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GOOGLE_AI_STUDIO_API_KEY")
+    if not api_key:
+        return ""
+
+    model = os.getenv("GOOGLE_MODEL", "gemini-2.0-flash")
+    api_url = os.getenv("GOOGLE_API_URL", GOOGLE_API_URL).rstrip("/")
+    request_url = f"{api_url}/{model}:generateContent?key={api_key}"
+
+    payload = {
+        "system_instruction": {"parts": [{"text": _build_system_prompt(lang, weather)}]},
+        "contents": [{"role": "user", "parts": [{"text": message}]}],
+        "generationConfig": {
+            "temperature": 0.4,
+            "maxOutputTokens": 300,
+        },
+    }
+
+    request = Request(
+        request_url,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+
+    with urlopen(request, timeout=18) as response:
+        body = json.loads(response.read().decode("utf-8"))
+
+    return _extract_google_text(body)
+
+
+def _request_openai_compatible_response(message: str, lang: str, weather: dict[str, Any] | None) -> str:
     api_key = os.getenv("GROQ_API_KEY") or os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        return ""
+
     model = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
     api_url = os.getenv("GROQ_API_URL", GROQ_API_URL)
-
-    if _is_summary_request(message):
-        message = (
-            "Give a concise summary of the AgroVision project with features, architecture, and how farmers use it in practice."
-            if lang == "en"
-            else "AgroVision प्रोजेक्ट का संक्षिप्त सार दें: फीचर्स, आर्किटेक्चर और किसान उपयोग।"
-        )
-
-    if not _is_project_related(message) and not _is_summary_request(message):
-        return chatbot.get_out_of_scope_response(lang), "local"
-
-    if not api_key:
-        return _fallback_with_context(chatbot, message, lang, weather)
 
     payload = {
         "model": model,
@@ -144,12 +179,37 @@ def get_ai_chat_response(chatbot, message: str, lang: str = "en", weather: dict[
         method="POST",
     )
 
+    with urlopen(request, timeout=18) as response:
+        body = json.loads(response.read().decode("utf-8"))
+
+    return body.get("choices", [{}])[0].get("message", {}).get("content", "").strip()
+
+
+def get_ai_chat_response(chatbot, message: str, lang: str = "en", weather: dict[str, Any] | None = None) -> tuple[str, str]:
+    is_summary = _is_summary_request(message)
+
+    if is_summary:
+        message = (
+            "Give a concise summary of the AgroVision project with features, architecture, and how farmers use it in practice."
+            if lang == "en"
+            else "AgroVision प्रोजेक्ट का संक्षिप्त सार दें: फीचर्स, आर्किटेक्चर और किसान उपयोग।"
+        )
+
+    if not _is_project_related(message) and not is_summary:
+        return chatbot.get_out_of_scope_response(lang), "local"
+
     try:
-        with urlopen(request, timeout=18) as response:
-            body = json.loads(response.read().decode("utf-8"))
-        content = body.get("choices", [{}])[0].get("message", {}).get("content", "").strip()
-        if not content:
-            return _fallback_with_context(chatbot, message, lang, weather)
-        return content, "ai"
+        content = _request_google_response(message, lang, weather)
+        if content:
+            return content, "ai"
     except Exception:
-        return _fallback_with_context(chatbot, message, lang, weather)
+        pass
+
+    try:
+        content = _request_openai_compatible_response(message, lang, weather)
+        if content:
+            return content, "ai"
+    except Exception:
+        pass
+
+    return _fallback_with_context(chatbot, message, lang, weather)

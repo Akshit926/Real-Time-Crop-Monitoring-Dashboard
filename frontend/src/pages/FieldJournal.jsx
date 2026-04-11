@@ -12,11 +12,30 @@ const CROP_OPTIONS = ['Tomato', 'Potato', 'Corn', 'Rice', 'Wheat', 'Apple', 'Oth
 const STATUS_OPTIONS = ['healthy', 'warning', 'critical', 'observation'];
 const WEATHER_OPTIONS = ['Sunny', 'Cloudy', 'Rainy', 'Windy', 'Humid', 'Dry'];
 
+const CROP_KEY_MAP = {
+  Tomato: 'crop_tomato',
+  Potato: 'crop_potato',
+  Corn: 'crop_corn',
+  Rice: 'crop_rice',
+  Wheat: 'crop_wheat',
+  Apple: 'crop_apple',
+  Other: 'crop_other',
+};
+
+const WEATHER_KEY_MAP = {
+  Sunny: 'weather_sunny',
+  Cloudy: 'weather_cloudy',
+  Rainy: 'weather_rainy',
+  Windy: 'weather_windy',
+  Humid: 'weather_humid',
+  Dry: 'weather_dry',
+};
+
 const STATUS_META = {
-  healthy:     { label: 'Healthy',     icon: CheckCircle2,   color: 'var(--status-healthy)',   bg: 'rgba(34,197,94,0.15)',   border: 'rgba(34,197,94,0.3)'   },
-  warning:     { label: 'Warning',     icon: AlertTriangle,  color: 'var(--status-warning)',   bg: 'rgba(234,179,8,0.15)',  border: 'rgba(234,179,8,0.3)'  },
-  critical:    { label: 'Critical',    icon: AlertTriangle,  color: 'var(--status-critical)',  bg: 'rgba(239,68,68,0.15)',  border: 'rgba(239,68,68,0.3)'  },
-  observation: { label: 'Observation', icon: FileText,        color: 'var(--status-info)',      bg: 'rgba(59,130,246,0.15)', border: 'rgba(59,130,246,0.3)' },
+  healthy:     { labelKey: 'journal_stat_healthy', icon: CheckCircle2,   color: 'var(--status-healthy)',   bg: 'rgba(34,197,94,0.15)',   border: 'rgba(34,197,94,0.3)'   },
+  warning:     { labelKey: 'journal_stat_warning', icon: AlertTriangle,  color: 'var(--status-warning)',   bg: 'rgba(234,179,8,0.15)',  border: 'rgba(234,179,8,0.3)'  },
+  critical:    { labelKey: 'journal_stat_critical', icon: AlertTriangle,  color: 'var(--status-critical)',  bg: 'rgba(239,68,68,0.15)',  border: 'rgba(239,68,68,0.3)'  },
+  observation: { labelKey: 'journal_stat_observation', icon: FileText,        color: 'var(--status-info)',      bg: 'rgba(59,130,246,0.15)', border: 'rgba(59,130,246,0.3)' },
 };
 
 const WEATHER_ICONS = {
@@ -24,16 +43,18 @@ const WEATHER_ICONS = {
   Windy: Wind, Humid: Thermometer, Dry: Sun,
 };
 
-function formatDate(isoStr) {
+function formatDate(isoStr, lang) {
   const d = new Date(isoStr);
-  return d.toLocaleString('en-IN', {
+  return d.toLocaleString(lang === 'hi' ? 'hi-IN' : 'en-IN', {
     day: '2-digit', month: 'short', year: 'numeric',
     hour: '2-digit', minute: '2-digit', hour12: true,
   });
 }
 
 export default function FieldJournal() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const cropLabel = (value) => t(CROP_KEY_MAP[value] || value);
+  const weatherLabel = (value) => t(WEATHER_KEY_MAP[value] || value);
 
   // Entries state
   const [entries, setEntries]         = useState([]);
@@ -68,7 +89,7 @@ export default function FieldJournal() {
       const data = await getJournalEntries();
       setEntries(data.entries || []);
     } catch {
-      setError('Could not load journal entries. Please ensure the backend is running.');
+      setError(t('journal_load_error'));
     } finally {
       setLoading(false);
     }
@@ -93,7 +114,7 @@ export default function FieldJournal() {
       setForm({ crop: 'Tomato', status: 'observation', note: '', weather: 'Sunny', zone: '', tags: '' });
       setShowForm(false);
     } catch {
-      setError('Failed to save entry. Please try again.');
+      setError(t('journal_save_error'));
     } finally {
       setSubmitting(false);
     }
@@ -106,7 +127,7 @@ export default function FieldJournal() {
       await deleteJournalEntry(id);
       setEntries(prev => prev.filter(e => e.id !== id));
     } catch {
-      setError('Could not delete entry.');
+      setError(t('journal_delete_error'));
     } finally {
       setDeleteId(null);
     }
@@ -195,7 +216,7 @@ export default function FieldJournal() {
                     value={form.crop}
                     onChange={e => setForm(f => ({ ...f, crop: e.target.value }))}
                   >
-                    {CROP_OPTIONS.map(c => <option key={c}>{c}</option>)}
+                    {CROP_OPTIONS.map(c => <option key={c} value={c}>{cropLabel(c)}</option>)}
                   </select>
                   <ChevronDown size={16} className="journal-select-arrow" />
                 </div>
@@ -219,7 +240,7 @@ export default function FieldJournal() {
                         onClick={() => setForm(f => ({ ...f, status: s }))}
                       >
                         <Icon size={12} />
-                        {meta.label}
+                        {t(meta.labelKey)}
                       </button>
                     );
                   })}
@@ -239,7 +260,7 @@ export default function FieldJournal() {
                     value={form.weather}
                     onChange={e => setForm(f => ({ ...f, weather: e.target.value }))}
                   >
-                    {WEATHER_OPTIONS.map(w => <option key={w}>{w}</option>)}
+                    {WEATHER_OPTIONS.map(w => <option key={w} value={w}>{weatherLabel(w)}</option>)}
                   </select>
                   <ChevronDown size={16} className="journal-select-arrow" />
                 </div>
@@ -253,7 +274,7 @@ export default function FieldJournal() {
                 <input
                   className="journal-input"
                   type="text"
-                  placeholder="e.g. Zone A, North Field"
+                  placeholder={t('journal_zone_placeholder')}
                   value={form.zone}
                   onChange={e => setForm(f => ({ ...f, zone: e.target.value }))}
                 />
@@ -344,14 +365,14 @@ export default function FieldJournal() {
               <button
                 className={`journal-filter-pill ${filterCrop === 'all' ? 'active' : ''}`}
                 onClick={() => setFilterCrop('all')}
-              >All Crops</button>
+              >{t('journal_all_crops')}</button>
               {CROP_OPTIONS.map(c => (
                 <button
                   key={c}
                   className={`journal-filter-pill ${filterCrop === c ? 'active' : ''}`}
                   onClick={() => setFilterCrop(c)}
                 >
-                  {c}
+                  {cropLabel(c)}
                 </button>
               ))}
             </div>
@@ -417,11 +438,11 @@ export default function FieldJournal() {
                           style={{ color: meta.color, background: meta.bg, border: `1px solid ${meta.border}` }}
                         >
                           <StatusIcon size={12} />
-                          {meta.label}
+                          {t(meta.labelKey)}
                         </span>
                         <span className="journal-entry-crop">
                           <Leaf size={13} />
-                          {entry.crop}
+                          {cropLabel(entry.crop)}
                         </span>
                         {entry.zone && (
                           <span className="journal-entry-zone">
@@ -432,17 +453,17 @@ export default function FieldJournal() {
                       <div className="journal-entry-right">
                         <span className="journal-entry-weather">
                           <WeatherIcon size={14} />
-                          {entry.weather}
+                          {weatherLabel(entry.weather)}
                         </span>
                         <span className="journal-entry-time">
                           <Clock size={12} />
-                          {formatDate(entry.timestamp)}
+                          {formatDate(entry.timestamp, lang)}
                         </span>
                         <button
                           className="journal-delete-btn"
                           onClick={() => handleDelete(entry.id)}
                           disabled={deleteId === entry.id}
-                          title="Delete entry"
+                          title={t('journal_delete_title')}
                           id={`journal-delete-${entry.id}`}
                         >
                           {deleteId === entry.id ? <span className="journal-spinner" /> : <Trash2 size={15} />}
@@ -473,7 +494,7 @@ export default function FieldJournal() {
 
       {filtered.length > 0 && (
         <p className="journal-count text-secondary animate-fade-in">
-          Showing {filtered.length} of {entries.length} {entries.length === 1 ? 'entry' : 'entries'}
+          {t('journal_showing')} {filtered.length} {t('common_of')} {entries.length} {entries.length === 1 ? t('journal_entry_single') : t('journal_entry_plural')}
         </p>
       )}
     </div>

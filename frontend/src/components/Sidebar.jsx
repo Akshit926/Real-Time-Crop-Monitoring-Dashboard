@@ -37,7 +37,7 @@ export default function Sidebar() {
       <button
         className="sidebar-mobile-toggle"
         onClick={() => setMobileOpen(!mobileOpen)}
-        aria-label="Toggle menu"
+        aria-label={t('sidebar_toggle_menu')}
       >
         {mobileOpen ? <X size={22} /> : <Menu size={22} />}
       </button>
@@ -85,7 +85,7 @@ export default function Sidebar() {
             <Languages size={18} />
             <span>{t('lang_toggle')}</span>
           </button>
-          <div className="sidebar-version">v1.0 — AI Powered</div>
+          <div className="sidebar-version">{t('sidebar_version')}</div>
         </div>
       </aside>
     </>

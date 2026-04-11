@@ -9,7 +9,7 @@ AgroVision is a full-stack, AI-powered agricultural monitoring platform designed
 - **🔍 AI Disease Detection:** Upload or capture images via webcam to identify diseases across the full PlantVillage label set used by the fine-tuned model.
 - **📊 Interactive Analytics:** Real-time data visualization using Chart.js, including disease distribution and health trends.
 - **🗺️ Farm Zone Mapping:** SVG-based interactive map to monitor different sectors of a farm with color-coded health statuses.
-- **🤖 AI Chatbot:** Groq-powered assistant with local rule-based fallback (50+ Q&A pairs).
+- **🤖 AI Chatbot:** Google AI Studio (Gemini) powered assistant with Groq/local fallback.
 - **🌦️ Weather Integration:** Real-time weather data from Open-Meteo API with farming advice.
 - **📓 Field Journal:** Log and track daily field observations with status, weather, tags, and notes.
 - **🌿 Disease & Pest Library:** Searchable encyclopedia of 10+ crop diseases with symptoms, causes, treatment, and prevention.
@@ -26,7 +26,7 @@ AgroVision is a full-stack, AI-powered agricultural monitoring platform designed
 | **Frontend** | React 19, Vite, JavaScript, Chart.js, React Router |
 | **Backend** | FastAPI (Python 3.9+), Uvicorn |
 | **AI/ML** | Fine-tuned MobileNetV2, TensorFlow/Keras, Pillow, NumPy |
-| **APIs** | Groq (optional), Open-Meteo (weather) |
+| **APIs** | Google AI Studio (Gemini, optional), Groq (optional), Open-Meteo (weather) |
 | **Icons/UI** | Lucide React, Google Fonts (Inter & Outfit) |
 | **Deployment** | Vercel (serverless functions) |
 
@@ -144,16 +144,21 @@ Open **http://localhost:5173** in your browser.
 
 ---
 
-### Enable Groq AI Chat (Optional)
+### Enable AI Chat (Optional)
 
 Create a `.env` file at the repository root:
 
 ```env
+# Preferred: Google AI Studio (Gemini)
+GOOGLE_API_KEY=your_google_ai_studio_api_key_here
+GOOGLE_MODEL=gemini-2.0-flash
+
+# Optional fallback: Groq
 GROQ_API_KEY=your_groq_api_key_here
 GROQ_MODEL=llama-3.3-70b-versatile
 ```
 
-If `GROQ_API_KEY` is not set, the chatbot automatically falls back to the local rule-based engine.
+Provider order is: `Google AI Studio -> Groq/OpenAI-compatible -> local rule-based chatbot`.
 
 ---
 
@@ -208,8 +213,9 @@ AgroVision loads the provided fine-tuned `.h5` MobileNetV2 model for real-time i
 
 ## 🤖 Chatbot Features
 
-- **Primary:** Groq integration for intelligent agricultural advice
-- **Fallback:** Local rule-based system with 50+ pre-defined Q&A pairs
+- **Primary:** Google AI Studio (Gemini) integration for intelligent agricultural advice
+- **Fallback 1:** Groq/OpenAI-compatible provider (if configured)
+- **Fallback 2:** Local rule-based system with 50+ pre-defined Q&A pairs
 - **Weather-Aware:** Incorporates current weather conditions in responses
 - **Bilingual:** Supports both English and Hindi queries
 - **Project-only guard:** Out-of-scope prompts are politely declined

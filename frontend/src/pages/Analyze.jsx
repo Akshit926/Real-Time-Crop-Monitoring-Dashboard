@@ -46,7 +46,7 @@ export default function Analyze() {
       const data = await predictDisease(image);
       setResult(data);
     } catch (err) {
-      setError(err.message || 'Analysis failed. Please try again.');
+      setError(err.message || t('analyze_error_failed'));
     } finally {
       setLoading(false);
     }
@@ -62,7 +62,7 @@ export default function Analyze() {
         setCameraActive(true);
       }
     } catch {
-      setError('Camera access denied. Please allow camera permissions.');
+      setError(t('analyze_error_camera_denied'));
     }
   };
 
@@ -163,13 +163,13 @@ export default function Analyze() {
           {/* Preview */}
           {imagePreview && !cameraActive && (
             <div className="image-preview glass-card-static">
-              <img src={imagePreview} alt="Crop preview" className="preview-img" />
+              <img src={imagePreview} alt={t('analyze_preview_alt')} className="preview-img" />
               <div className="preview-actions">
                 <button className="btn btn-primary" onClick={handleAnalyze} disabled={loading}>
-                  {loading ? <><Loader size={18} className="spin-icon" /> {t('analyzing')}</> : <><FlaskConical size={18} /> Analyze</>}
+                  {loading ? <><Loader size={18} className="spin-icon" /> {t('analyzing')}</> : <><FlaskConical size={18} /> {t('analyze_action')}</>}
                 </button>
                 <button className="btn btn-ghost" onClick={reset}>
-                  <RefreshCw size={18} /> Reset
+                  <RefreshCw size={18} /> {t('common_reset')}
                 </button>
               </div>
             </div>
@@ -184,9 +184,9 @@ export default function Analyze() {
             <div className="analyze-loading glass-card-static">
               <div className="loading-spinner" />
               <p className="heading-md">{t('analyzing')}</p>
-              <p className="text-secondary">AI model is processing your image…</p>
+              <p className="text-secondary">{t('analyze_loading_detail')}</p>
               <p className="text-secondary" style={{ fontSize: '0.78rem', marginTop: 6, opacity: 0.7 }}>
-                First request may take ~30s if the server is waking up.
+                {t('analyze_loading_hint')}
               </p>
               <div className="loading-bars">
                 <div className="loading-bar" style={{ animationDelay: '0s' }} />
@@ -200,7 +200,7 @@ export default function Analyze() {
             <div className="analyze-error glass-card-static">
               <AlertTriangle size={32} color="var(--status-critical)" />
               <p>{error}</p>
-              <button className="btn btn-secondary" onClick={() => setError(null)}>Try Again</button>
+              <button className="btn btn-secondary" onClick={() => setError(null)}>{t('analyze_try_again')}</button>
             </div>
           )}
 
@@ -278,10 +278,10 @@ export default function Analyze() {
             <div className="analyze-placeholder glass-card-static">
               <FlaskConical size={48} strokeWidth={1.2} color="var(--text-tertiary)" />
               <p className="heading-md" style={{ color: 'var(--text-tertiary)', marginTop: 12 }}>
-                Upload an image to start analysis
+                {t('analyze_placeholder_title')}
               </p>
               <p className="text-secondary" style={{ fontSize: '0.85rem', textAlign: 'center' }}>
-                Our AI model will detect crop diseases and provide<br />smart recommendations instantly
+                {t('analyze_placeholder_subtitle')}
               </p>
             </div>
           )}

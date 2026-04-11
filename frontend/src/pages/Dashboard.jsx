@@ -9,11 +9,11 @@ import { ScanLine, Heart, AlertTriangle, MapPin, ArrowRight, BarChart3 } from 'l
 import './Dashboard.css';
 
 const recentDetections = [
-  { crop: 'Tomato', disease: 'Late Blight', confidence: 91.2, status: 'Diseased', timestamp: 'Today, 10:30 AM' },
-  { crop: 'Potato', disease: 'None', confidence: 95.8, status: 'Healthy', timestamp: 'Today, 09:15 AM' },
-  { crop: 'Corn', disease: 'Northern Leaf Blight', confidence: 84.5, status: 'Diseased', timestamp: 'Today, 08:00 AM' },
-  { crop: 'Rice', disease: 'None', confidence: 92.1, status: 'Healthy', timestamp: 'Yesterday, 04:45 PM' },
-  { crop: 'Wheat', disease: 'Powdery Mildew', confidence: 78.3, status: 'Diseased', timestamp: 'Yesterday, 02:30 PM' },
+  { cropKey: 'crop_tomato', diseaseKey: 'disease_late_blight', confidence: 91.2, statusCode: 'diseased', timestampKey: 'time_today_1030' },
+  { cropKey: 'crop_potato', diseaseKey: 'none', confidence: 95.8, statusCode: 'healthy', timestampKey: 'time_today_0915' },
+  { cropKey: 'crop_corn', diseaseKey: 'disease_northern_leaf_blight', confidence: 84.5, statusCode: 'diseased', timestampKey: 'time_today_0800' },
+  { cropKey: 'crop_rice', diseaseKey: 'none', confidence: 92.1, statusCode: 'healthy', timestampKey: 'time_yesterday_0445' },
+  { cropKey: 'crop_wheat', diseaseKey: 'disease_powdery_mildew', confidence: 78.3, statusCode: 'diseased', timestampKey: 'time_yesterday_0230' },
 ];
 
 export default function Dashboard() {
@@ -130,7 +130,16 @@ export default function Dashboard() {
         </div>
         <div className="cards-grid" style={{ marginTop: 16 }}>
           {recentDetections.map((item, i) => (
-            <DetectionCard key={i} {...item} index={i} />
+            <DetectionCard
+              key={i}
+              crop={t(item.cropKey)}
+              disease={item.diseaseKey === 'none' ? t('none') : t(item.diseaseKey)}
+              confidence={item.confidence}
+              statusCode={item.statusCode}
+              status={item.statusCode === 'healthy' ? t('healthy') : t('diseased')}
+              timestamp={t(item.timestampKey)}
+              index={i}
+            />
           ))}
         </div>
       </div>

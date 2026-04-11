@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, Leaf, CloudSun } from 'lucide-react';
+import { MessageCircle, X, Send, Leaf, CloudSun, Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { sendChatMessage, getWeather } from '../utils/api';
 import './Chatbot.css';
@@ -29,10 +29,55 @@ export default function Chatbot() {
   const [messages, setMessages] = useState([]);
   const [inputVal, setInputVal] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [speechEnabled, setSpeechEnabled] = useState(true);
   const [assistantMode, setAssistantMode] = useState('local');
   const [weatherContext, setWeatherContext] = useState(null);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+  const recognitionRef = useRef(null);
+  const isAiMode = assistantMode !== 'local';
+
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch {
+          // no-op
+        }
+      }
+
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
+
+  const appendBotMessage = (text, source = 'local') => {
+    setMessages((prev) => [...prev, { role: 'bot', text, source }]);
+  };
+
+  const speakText = (text) => {
+    if (!speechEnabled || typeof window === 'undefined' || !window.speechSynthesis || !text) {
+      return;
+    }
+
+    const sanitizedText = text.replace(/\s+/g, ' ').trim();
+    if (!sanitizedText) {
+      return;
+    }
+
+    try {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(sanitizedText);
+      utterance.lang = lang === 'hi' ? 'hi-IN' : 'en-US';
+      utterance.rate = 0.95;
+      window.speechSynthesis.speak(utterance);
+    } catch {
+      // no-op
+    }
+  };
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
@@ -82,21 +127,64 @@ export default function Chatbot() {
     try {
       const data = await sendChatMessage(text.trim(), lang, weatherContext);
       setAssistantMode(data.source || 'local');
-      setMessages((prev) => [...prev, { role: 'bot', text: data.response, source: data.source || 'local' }]);
+      appendBotMessage(data.response, data.source || 'local');
+      speakText(data.response);
     } catch {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'bot',
-          source: 'local',
-          text: lang === 'hi'
-            ? 'माफ करें, कुछ गलत हो गया। कृपया दोबारा कोशिश करें।'
-            : 'Sorry, something went wrong. Please try again.',
-        },
-      ]);
+      appendBotMessage(t('chat_error_generic'), 'local');
     } finally {
       setIsTyping(false);
     }
+  };
+
+  const toggleListening = () => {
+    if (isListening && recognitionRef.current) {
+      recognitionRef.current.stop();
+      return;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      appendBotMessage(t('chat_voice_not_supported'), 'local');
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.lang = lang === 'hi' ? 'hi-IN' : 'en-US';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onstart = () => setIsListening(true);
+      recognition.onresult = (event) => {
+        const transcript = event?.results?.[0]?.[0]?.transcript?.trim();
+        if (transcript) {
+          setInputVal(transcript);
+          handleSend(transcript);
+        }
+      };
+      recognition.onerror = () => {
+        appendBotMessage(t('chat_voice_error'), 'local');
+      };
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+    } catch {
+      appendBotMessage(t('chat_voice_error'), 'local');
+      setIsListening(false);
+    }
+  };
+
+  const toggleSpeechOutput = () => {
+    setSpeechEnabled((prev) => {
+      const next = !prev;
+      if (!next && typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+      return next;
+    });
   };
 
   const handleKeyDown = (e) => {
@@ -111,7 +199,7 @@ export default function Chatbot() {
       <button
         className={`chatbot-fab ${isOpen ? 'chatbot-fab-hidden' : ''}`}
         onClick={() => setIsOpen(true)}
-        aria-label="Open chat assistant"
+        aria-label={t('chat_open_aria')}
       >
         <MessageCircle size={24} />
         <span className="chatbot-fab-pulse" />
@@ -127,7 +215,7 @@ export default function Chatbot() {
               <div>
                 <div className="chatbot-header-title">{t('chat_title')}</div>
                 <div className="chatbot-header-status">
-                  {assistantMode === 'ai' ? t('chat_status_ai') : t('chat_status_local')}
+                  {isAiMode ? t('chat_status_ai') : t('chat_status_local')}
                 </div>
               </div>
             </div>
@@ -139,7 +227,17 @@ export default function Chatbot() {
               </div>
             )}
 
-            <button className="chatbot-close" onClick={() => setIsOpen(false)}>
+            <button
+              className={`chatbot-voice-toggle ${speechEnabled ? 'chatbot-voice-toggle-active' : ''}`}
+              onClick={toggleSpeechOutput}
+              title={speechEnabled ? t('chat_speak_on') : t('chat_speak_off')}
+              aria-label={speechEnabled ? t('chat_speak_on') : t('chat_speak_off')}
+              type="button"
+            >
+              {speechEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
+            </button>
+
+            <button className="chatbot-close" onClick={() => setIsOpen(false)} aria-label={t('chat_close_aria')}>
               <X size={18} />
             </button>
           </div>
@@ -156,7 +254,7 @@ export default function Chatbot() {
                   ))}
                   {msg.role === 'bot' && (
                     <div className="chatbot-msg-source">
-                      {msg.source === 'ai' ? t('chat_source_ai') : t('chat_source_local')}
+                      {msg.source !== 'local' ? t('chat_source_ai') : t('chat_source_local')}
                     </div>
                   )}
                 </div>
@@ -186,6 +284,16 @@ export default function Chatbot() {
           )}
 
           <div className="chatbot-input-area">
+            <button
+              className={`chatbot-voice-btn ${isListening ? 'chatbot-voice-btn-active' : ''}`}
+              onClick={toggleListening}
+              title={isListening ? t('chat_mic_stop') : t('chat_mic_start')}
+              aria-label={isListening ? t('chat_mic_stop') : t('chat_mic_start')}
+              type="button"
+            >
+              {isListening ? <MicOff size={17} /> : <Mic size={17} />}
+            </button>
+
             <input
               ref={inputRef}
               className="chatbot-input"
@@ -202,6 +310,10 @@ export default function Chatbot() {
               <Send size={18} />
             </button>
           </div>
+
+          {isListening && (
+            <div className="chatbot-listening-indicator">{t('chat_voice_listening')}</div>
+          )}
         </div>
       )}
     </>

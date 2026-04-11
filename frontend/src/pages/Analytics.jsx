@@ -41,7 +41,7 @@ export default function Analytics() {
 
   // Health Distribution (Doughnut)
   const healthData = {
-    labels: ['Healthy', 'Diseased'],
+    labels: [t('healthy'), t('diseased')],
     datasets: [{
       data: [78, 22],
       backgroundColor: ['#22c55e', '#ef4444'],
@@ -53,7 +53,14 @@ export default function Analytics() {
 
   // Disease distribution (Pie)
   const diseaseData = {
-    labels: ['Late Blight', 'Early Blight', 'Powdery Mildew', 'Leaf Spot', 'Northern Leaf Blight', 'Blast'],
+    labels: [
+      t('disease_late_blight'),
+      t('disease_early_blight'),
+      t('disease_powdery_mildew'),
+      t('disease_leaf_spot'),
+      t('disease_northern_leaf_blight'),
+      t('disease_blast'),
+    ],
     datasets: [{
       data: [28, 18, 15, 14, 13, 12],
       backgroundColor: [
@@ -66,17 +73,17 @@ export default function Analytics() {
 
   // Detection History (Bar)
   const historyData = {
-    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    labels: [t('day_mon'), t('day_tue'), t('day_wed'), t('day_thu'), t('day_fri'), t('day_sat'), t('day_sun')],
     datasets: [
       {
-        label: 'Healthy',
+        label: t('healthy'),
         data: [12, 15, 8, 18, 14, 10, 16],
         backgroundColor: 'rgba(34, 197, 94, 0.7)',
         borderRadius: 6,
         borderSkipped: false,
       },
       {
-        label: 'Diseased',
+        label: t('diseased'),
         data: [4, 3, 6, 2, 5, 3, 4],
         backgroundColor: 'rgba(239, 68, 68, 0.7)',
         borderRadius: 6,
@@ -102,9 +109,9 @@ export default function Analytics() {
 
   // Health Trend (Line)
   const trendData = {
-    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8'],
+    labels: [t('week_1'), t('week_2'), t('week_3'), t('week_4'), t('week_5'), t('week_6'), t('week_7'), t('week_8')],
     datasets: [{
-      label: 'Health Score',
+      label: t('chart_health_score'),
       data: [72, 68, 75, 71, 78, 82, 80, 85],
       borderColor: '#10b981',
       backgroundColor: 'rgba(16, 185, 129, 0.08)',
@@ -158,11 +165,11 @@ export default function Analytics() {
           <div className="chart-summary">
             <div className="chart-summary-item">
               <span className="chart-dot" style={{ background: '#22c55e' }} />
-              <span>78% Healthy</span>
+              <span>{t('chart_summary_healthy')}</span>
             </div>
             <div className="chart-summary-item">
               <span className="chart-dot" style={{ background: '#ef4444' }} />
-              <span>22% Diseased</span>
+              <span>{t('chart_summary_diseased')}</span>
             </div>
           </div>
         </div>

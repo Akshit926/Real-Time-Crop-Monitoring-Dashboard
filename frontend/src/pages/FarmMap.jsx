@@ -12,10 +12,42 @@ const fallbackZones = [
   { id: 'F', name: 'Zone F — Orchard', crop: 'Apple', status: 'healthy', health_percent: 91, last_scan: '2026-04-09 11:00 AM', area_acres: 2.0, color: '#22c55e' },
 ];
 
+const CROP_KEY_BY_NAME = {
+  Tomato: 'crop_tomato',
+  Potato: 'crop_potato',
+  Corn: 'crop_corn',
+  Rice: 'crop_rice',
+  Wheat: 'crop_wheat',
+  Apple: 'crop_apple',
+};
+
+const ZONE_NAME_KEY_BY_ID = {
+  A: 'zone_name_a',
+  B: 'zone_name_b',
+  C: 'zone_name_c',
+  D: 'zone_name_d',
+  E: 'zone_name_e',
+  F: 'zone_name_f',
+};
+
+const CROP_EMOJI = {
+  Tomato: '🍅',
+  Potato: '🥔',
+  Corn: '🌽',
+  Rice: '🌾',
+  Wheat: '🌾',
+  Apple: '🍎',
+};
+
 export default function FarmMap() {
   const { t } = useLanguage();
   const [zones, setZones] = useState(fallbackZones);
   const [selected, setSelected] = useState(null);
+
+  const zoneAt = (index) => zones[index] || fallbackZones[index];
+  const cropLabel = (crop) => t(CROP_KEY_BY_NAME[crop] || crop);
+  const zoneNameLabel = (zone) => t(ZONE_NAME_KEY_BY_ID[zone?.id] || zone?.name || '');
+  const cropEmoji = (crop) => CROP_EMOJI[crop] || '🌿';
 
   useEffect(() => {
     getFarmZones()
@@ -58,69 +90,111 @@ export default function FarmMap() {
             ))}
 
             {/* Zone A — top-left */}
-            <g onClick={() => setSelected(zones[0])} className="farm-zone-group" style={{ cursor: 'pointer' }}>
+            <g onClick={() => setSelected(zoneAt(0))} className="farm-zone-group" style={{ cursor: 'pointer' }}>
+              {(() => {
+                const zone = zoneAt(0);
+                return (
+                  <>
               <rect x="20" y="20" width="180" height="160" rx="10"
-                fill={zones[0]?.color + '22'} stroke={zones[0]?.color} strokeWidth="2"
+                fill={zone?.color + '22'} stroke={zone?.color} strokeWidth="2"
                 className={selected?.id === 'A' ? 'zone-selected' : ''}
               />
-              <text x="110" y="90" textAnchor="middle" fill={zones[0]?.color} fontSize="24" fontWeight="700">A</text>
-              <text x="110" y="115" textAnchor="middle" fill="var(--text-secondary)" fontSize="11">🍅 Tomato</text>
-              <text x="110" y="135" textAnchor="middle" fill={zones[0]?.color} fontSize="12" fontWeight="600">{zones[0]?.health_percent}%</text>
+              <text x="110" y="90" textAnchor="middle" fill={zone?.color} fontSize="24" fontWeight="700">A</text>
+              <text x="110" y="115" textAnchor="middle" fill="var(--text-secondary)" fontSize="11">{`${cropEmoji(zone?.crop)} ${cropLabel(zone?.crop)}`}</text>
+              <text x="110" y="135" textAnchor="middle" fill={zone?.color} fontSize="12" fontWeight="600">{zone?.health_percent}%</text>
+                  </>
+                );
+              })()}
             </g>
 
             {/* Zone B — top-center */}
-            <g onClick={() => setSelected(zones[1])} className="farm-zone-group" style={{ cursor: 'pointer' }}>
+            <g onClick={() => setSelected(zoneAt(1))} className="farm-zone-group" style={{ cursor: 'pointer' }}>
+              {(() => {
+                const zone = zoneAt(1);
+                return (
+                  <>
               <rect x="210" y="20" width="180" height="160" rx="10"
-                fill={zones[1]?.color + '22'} stroke={zones[1]?.color} strokeWidth="2"
+                fill={zone?.color + '22'} stroke={zone?.color} strokeWidth="2"
                 className={selected?.id === 'B' ? 'zone-selected' : ''}
               />
-              <text x="300" y="90" textAnchor="middle" fill={zones[1]?.color} fontSize="24" fontWeight="700">B</text>
-              <text x="300" y="115" textAnchor="middle" fill="var(--text-secondary)" fontSize="11">🥔 Potato</text>
-              <text x="300" y="135" textAnchor="middle" fill={zones[1]?.color} fontSize="12" fontWeight="600">{zones[1]?.health_percent}%</text>
+              <text x="300" y="90" textAnchor="middle" fill={zone?.color} fontSize="24" fontWeight="700">B</text>
+              <text x="300" y="115" textAnchor="middle" fill="var(--text-secondary)" fontSize="11">{`${cropEmoji(zone?.crop)} ${cropLabel(zone?.crop)}`}</text>
+              <text x="300" y="135" textAnchor="middle" fill={zone?.color} fontSize="12" fontWeight="600">{zone?.health_percent}%</text>
+                  </>
+                );
+              })()}
             </g>
 
             {/* Zone C — top-right */}
-            <g onClick={() => setSelected(zones[2])} className="farm-zone-group" style={{ cursor: 'pointer' }}>
+            <g onClick={() => setSelected(zoneAt(2))} className="farm-zone-group" style={{ cursor: 'pointer' }}>
+              {(() => {
+                const zone = zoneAt(2);
+                return (
+                  <>
               <rect x="400" y="20" width="180" height="160" rx="10"
-                fill={zones[2]?.color + '22'} stroke={zones[2]?.color} strokeWidth="2"
+                fill={zone?.color + '22'} stroke={zone?.color} strokeWidth="2"
                 className={selected?.id === 'C' ? 'zone-selected' : ''}
               />
-              <text x="490" y="90" textAnchor="middle" fill={zones[2]?.color} fontSize="24" fontWeight="700">C</text>
-              <text x="490" y="115" textAnchor="middle" fill="var(--text-secondary)" fontSize="11">🌽 Corn</text>
-              <text x="490" y="135" textAnchor="middle" fill={zones[2]?.color} fontSize="12" fontWeight="600">{zones[2]?.health_percent}%</text>
+              <text x="490" y="90" textAnchor="middle" fill={zone?.color} fontSize="24" fontWeight="700">C</text>
+              <text x="490" y="115" textAnchor="middle" fill="var(--text-secondary)" fontSize="11">{`${cropEmoji(zone?.crop)} ${cropLabel(zone?.crop)}`}</text>
+              <text x="490" y="135" textAnchor="middle" fill={zone?.color} fontSize="12" fontWeight="600">{zone?.health_percent}%</text>
+                  </>
+                );
+              })()}
             </g>
 
             {/* Zone D — bottom-left */}
-            <g onClick={() => setSelected(zones[3])} className="farm-zone-group" style={{ cursor: 'pointer' }}>
+            <g onClick={() => setSelected(zoneAt(3))} className="farm-zone-group" style={{ cursor: 'pointer' }}>
+              {(() => {
+                const zone = zoneAt(3);
+                return (
+                  <>
               <rect x="20" y="200" width="180" height="180" rx="10"
-                fill={zones[3]?.color + '22'} stroke={zones[3]?.color} strokeWidth="2"
+                fill={zone?.color + '22'} stroke={zone?.color} strokeWidth="2"
                 className={selected?.id === 'D' ? 'zone-selected' : ''}
               />
-              <text x="110" y="280" textAnchor="middle" fill={zones[3]?.color} fontSize="24" fontWeight="700">D</text>
-              <text x="110" y="305" textAnchor="middle" fill="var(--text-secondary)" fontSize="11">🌾 Rice</text>
-              <text x="110" y="325" textAnchor="middle" fill={zones[3]?.color} fontSize="12" fontWeight="600">{zones[3]?.health_percent}%</text>
+              <text x="110" y="280" textAnchor="middle" fill={zone?.color} fontSize="24" fontWeight="700">D</text>
+              <text x="110" y="305" textAnchor="middle" fill="var(--text-secondary)" fontSize="11">{`${cropEmoji(zone?.crop)} ${cropLabel(zone?.crop)}`}</text>
+              <text x="110" y="325" textAnchor="middle" fill={zone?.color} fontSize="12" fontWeight="600">{zone?.health_percent}%</text>
+                  </>
+                );
+              })()}
             </g>
 
             {/* Zone E — bottom-center */}
-            <g onClick={() => setSelected(zones[4])} className="farm-zone-group" style={{ cursor: 'pointer' }}>
+            <g onClick={() => setSelected(zoneAt(4))} className="farm-zone-group" style={{ cursor: 'pointer' }}>
+              {(() => {
+                const zone = zoneAt(4);
+                return (
+                  <>
               <rect x="210" y="200" width="180" height="180" rx="10"
-                fill={zones[4]?.color + '22'} stroke={zones[4]?.color} strokeWidth="2"
+                fill={zone?.color + '22'} stroke={zone?.color} strokeWidth="2"
                 className={selected?.id === 'E' ? 'zone-selected' : ''}
               />
-              <text x="300" y="280" textAnchor="middle" fill={zones[4]?.color} fontSize="24" fontWeight="700">E</text>
-              <text x="300" y="305" textAnchor="middle" fill="var(--text-secondary)" fontSize="11">🌾 Wheat</text>
-              <text x="300" y="325" textAnchor="middle" fill={zones[4]?.color} fontSize="12" fontWeight="600">{zones[4]?.health_percent}%</text>
+              <text x="300" y="280" textAnchor="middle" fill={zone?.color} fontSize="24" fontWeight="700">E</text>
+              <text x="300" y="305" textAnchor="middle" fill="var(--text-secondary)" fontSize="11">{`${cropEmoji(zone?.crop)} ${cropLabel(zone?.crop)}`}</text>
+              <text x="300" y="325" textAnchor="middle" fill={zone?.color} fontSize="12" fontWeight="600">{zone?.health_percent}%</text>
+                  </>
+                );
+              })()}
             </g>
 
             {/* Zone F — bottom-right */}
-            <g onClick={() => setSelected(zones[5])} className="farm-zone-group" style={{ cursor: 'pointer' }}>
+            <g onClick={() => setSelected(zoneAt(5))} className="farm-zone-group" style={{ cursor: 'pointer' }}>
+              {(() => {
+                const zone = zoneAt(5);
+                return (
+                  <>
               <rect x="400" y="200" width="180" height="180" rx="10"
-                fill={zones[5]?.color + '22'} stroke={zones[5]?.color} strokeWidth="2"
+                fill={zone?.color + '22'} stroke={zone?.color} strokeWidth="2"
                 className={selected?.id === 'F' ? 'zone-selected' : ''}
               />
-              <text x="490" y="280" textAnchor="middle" fill={zones[5]?.color} fontSize="24" fontWeight="700">F</text>
-              <text x="490" y="305" textAnchor="middle" fill="var(--text-secondary)" fontSize="11">🍎 Apple</text>
-              <text x="490" y="325" textAnchor="middle" fill={zones[5]?.color} fontSize="12" fontWeight="600">{zones[5]?.health_percent}%</text>
+              <text x="490" y="280" textAnchor="middle" fill={zone?.color} fontSize="24" fontWeight="700">F</text>
+              <text x="490" y="305" textAnchor="middle" fill="var(--text-secondary)" fontSize="11">{`${cropEmoji(zone?.crop)} ${cropLabel(zone?.crop)}`}</text>
+              <text x="490" y="325" textAnchor="middle" fill={zone?.color} fontSize="12" fontWeight="600">{zone?.health_percent}%</text>
+                  </>
+                );
+              })()}
             </g>
           </svg>
 
@@ -138,13 +212,13 @@ export default function FarmMap() {
           {selected ? (
             <div className="zone-detail-card glass-card animate-fade-in-up">
               <div className="zone-detail-header">
-                <h3 className="heading-lg">{selected.name}</h3>
+                <h3 className="heading-lg">{zoneNameLabel(selected)}</h3>
                 <span className={`badge ${statusBadge(selected.status)}`}>{statusLabel(selected.status)}</span>
               </div>
               <div className="zone-detail-grid">
                 <div className="zone-detail-item">
                   <span className="zone-detail-label">{t('zone_crop')}</span>
-                  <span className="zone-detail-value">{selected.crop}</span>
+                  <span className="zone-detail-value">{cropLabel(selected.crop)}</span>
                 </div>
                 <div className="zone-detail-item">
                   <span className="zone-detail-label">{t('zone_health')}</span>
@@ -170,7 +244,7 @@ export default function FarmMap() {
             </div>
           ) : (
             <div className="zone-detail-placeholder glass-card-static">
-              <p className="text-secondary">Click a zone on the map to see details</p>
+              <p className="text-secondary">{t('map_click_zone_prompt')}</p>
             </div>
           )}
 
@@ -184,8 +258,8 @@ export default function FarmMap() {
               >
                 <div className="zone-list-color" style={{ background: z.color }} />
                 <div className="zone-list-info">
-                  <span className="zone-list-name">{z.name}</span>
-                  <span className="zone-list-crop">{z.crop} · {z.health_percent}%</span>
+                  <span className="zone-list-name">{zoneNameLabel(z)}</span>
+                  <span className="zone-list-crop">{cropLabel(z.crop)} · {z.health_percent}%</span>
                 </div>
                 <span className={`badge ${statusBadge(z.status)}`}>{statusLabel(z.status)}</span>
               </div>

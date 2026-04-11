@@ -255,6 +255,9 @@ def _build_fallback_weather(location_name: str, lat: float, lon: float, lang: st
     summary, advice = _pick_weather_description(2, lang)
     fallback_risk = _compute_disease_risk(29.0, 58.0, 18.0, 1.2, 11.0, lang)
     fallback_irrigation = _compute_irrigation(29.0, 58.0, 18.0, 1.2, lang)
+    labels = ["Now", "+1h", "+2h", "+3h", "+4h", "+5h"]
+    if lang == "hi":
+        labels = ["अब", "+1घं", "+2घं", "+3घं", "+4घं", "+5घं"]
 
     return {
         "location": location_name,
@@ -270,12 +273,12 @@ def _build_fallback_weather(location_name: str, lat: float, lon: float, lang: st
         "disease_risk": fallback_risk,
         "irrigation": fallback_irrigation,
         "forecast_next_hours": [
-            {"time": "", "label": "Now", "temperature_c": 29, "precipitation_probability": 18, "rain_mm": 0.2},
-            {"time": "", "label": "+1h", "temperature_c": 29, "precipitation_probability": 20, "rain_mm": 0.3},
-            {"time": "", "label": "+2h", "temperature_c": 28, "precipitation_probability": 22, "rain_mm": 0.3},
-            {"time": "", "label": "+3h", "temperature_c": 28, "precipitation_probability": 20, "rain_mm": 0.2},
-            {"time": "", "label": "+4h", "temperature_c": 27, "precipitation_probability": 16, "rain_mm": 0.1},
-            {"time": "", "label": "+5h", "temperature_c": 27, "precipitation_probability": 14, "rain_mm": 0.1},
+            {"time": "", "label": labels[0], "temperature_c": 29, "precipitation_probability": 18, "rain_mm": 0.2},
+            {"time": "", "label": labels[1], "temperature_c": 29, "precipitation_probability": 20, "rain_mm": 0.3},
+            {"time": "", "label": labels[2], "temperature_c": 28, "precipitation_probability": 22, "rain_mm": 0.3},
+            {"time": "", "label": labels[3], "temperature_c": 28, "precipitation_probability": 20, "rain_mm": 0.2},
+            {"time": "", "label": labels[4], "temperature_c": 27, "precipitation_probability": 16, "rain_mm": 0.1},
+            {"time": "", "label": labels[5], "temperature_c": 27, "precipitation_probability": 14, "rain_mm": 0.1},
         ],
         "source": "fallback",
     }

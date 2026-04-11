@@ -10,39 +10,61 @@ import { getTasks, addTask, updateTaskStatus, deleteTask } from '../utils/api';
 import './TaskManager.css';
 
 const PRIORITY_META = {
-  high:   { label: 'High',   icon: Flame,     color: '#ef4444', bg: 'rgba(239,68,68,0.12)',   border: 'rgba(239,68,68,0.3)' },
-  medium: { label: 'Medium', icon: Minus,     color: '#eab308', bg: 'rgba(234,179,8,0.12)',  border: 'rgba(234,179,8,0.3)' },
-  low:    { label: 'Low',    icon: ArrowDown, color: '#3b82f6', bg: 'rgba(59,130,246,0.12)', border: 'rgba(59,130,246,0.3)' },
+  high:   { labelKey: 'task_priority_high', icon: Flame,     color: '#ef4444', bg: 'rgba(239,68,68,0.12)',   border: 'rgba(239,68,68,0.3)' },
+  medium: { labelKey: 'task_priority_medium', icon: Minus,     color: '#eab308', bg: 'rgba(234,179,8,0.12)',  border: 'rgba(234,179,8,0.3)' },
+  low:    { labelKey: 'task_priority_low', icon: ArrowDown, color: '#3b82f6', bg: 'rgba(59,130,246,0.12)', border: 'rgba(59,130,246,0.3)' },
 };
 
 const STATUS_META = {
-  pending:     { label: 'Pending',     color: 'var(--text-tertiary)' },
-  in_progress: { label: 'In Progress', color: '#eab308' },
-  done:        { label: 'Done',        color: '#22c55e' },
+  pending:     { labelKey: 'task_stat_pending', color: 'var(--text-tertiary)' },
+  in_progress: { labelKey: 'task_stat_progress', color: '#eab308' },
+  done:        { labelKey: 'task_stat_done', color: '#22c55e' },
 };
 
 const CATEGORIES = ['Irrigation', 'Fertilization', 'Spraying', 'Harvesting', 'Scouting', 'Planting', 'Other'];
 const CROPS = ['All Zones', 'Zone A — Tomato', 'Zone B — Potato', 'Zone C — Corn', 'Zone D — Rice', 'Zone E — Wheat', 'Zone F — Apple'];
+
+const CATEGORY_KEY_MAP = {
+  Irrigation: 'task_category_irrigation',
+  Fertilization: 'task_category_fertilization',
+  Spraying: 'task_category_spraying',
+  Harvesting: 'task_category_harvesting',
+  Scouting: 'task_category_scouting',
+  Planting: 'task_category_planting',
+  Other: 'task_category_other',
+};
+
+const ZONE_KEY_MAP = {
+  'All Zones': 'zone_all_zones',
+  'Zone A — Tomato': 'zone_option_a',
+  'Zone B — Potato': 'zone_option_b',
+  'Zone C — Corn': 'zone_option_c',
+  'Zone D — Rice': 'zone_option_d',
+  'Zone E — Wheat': 'zone_option_e',
+  'Zone F — Apple': 'zone_option_f',
+};
 
 function isOverdue(dueDate) {
   if (!dueDate) return false;
   return new Date(dueDate) < new Date() && true;
 }
 
-function formatDue(dueDate) {
+function formatDue(dueDate, t) {
   if (!dueDate) return null;
   const d = new Date(dueDate);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const diff = Math.round((d - today) / 86400000);
-  if (diff < 0) return `${Math.abs(diff)}d overdue`;
-  if (diff === 0) return 'Due today';
-  if (diff === 1) return 'Due tomorrow';
-  return `Due in ${diff}d`;
+  if (diff < 0) return t('task_due_overdue_days').replace('{days}', String(Math.abs(diff)));
+  if (diff === 0) return t('task_due_today');
+  if (diff === 1) return t('task_due_tomorrow');
+  return t('task_due_in_days').replace('{days}', String(diff));
 }
 
 export default function TaskManager() {
   const { t } = useLanguage();
+  const categoryLabel = (value) => t(CATEGORY_KEY_MAP[value] || value);
+  const zoneLabel = (value) => t(ZONE_KEY_MAP[value] || value);
 
   const [tasks, setTasks]           = useState([]);
   const [loading, setLoading]       = useState(true);
@@ -214,7 +236,7 @@ export default function TaskManager() {
                         style={{ '--pill-color': meta.color, '--pill-bg': meta.bg, '--pill-border': meta.border }}
                         onClick={() => setForm(f => ({ ...f, priority: key }))}
                       >
-                        <Icon size={12} /> {meta.label}
+                        <Icon size={12} /> {t(meta.labelKey)}
                       </button>
                     );
                   })}
@@ -230,7 +252,7 @@ export default function TaskManager() {
                     value={form.category}
                     onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
                   >
-                    {CATEGORIES.map(c => <option key={c}>{c}</option>)}
+                    {CATEGORIES.map(c => <option key={c} value={c}>{categoryLabel(c)}</option>)}
                   </select>
                   <ChevronDown size={15} className="task-select-arrow" />
                 </div>
@@ -247,7 +269,7 @@ export default function TaskManager() {
                     value={form.zone}
                     onChange={e => setForm(f => ({ ...f, zone: e.target.value }))}
                   >
-                    {CROPS.map(c => <option key={c}>{c}</option>)}
+                    {CROPS.map(c => <option key={c} value={c}>{zoneLabel(c)}</option>)}
                   </select>
                   <ChevronDown size={15} className="task-select-arrow" />
                 </div>
@@ -296,7 +318,7 @@ export default function TaskManager() {
         <div className="tasks-filter-group">
           <span className="tasks-filter-label"><Filter size={13} /> {t('task_filter_priority')}</span>
           <div className="tasks-filter-pills">
-            <button className={`tasks-fp ${filterPriority === 'all' ? 'active' : ''}`} onClick={() => setFilterPriority('all')}>All</button>
+            <button className={`tasks-fp ${filterPriority === 'all' ? 'active' : ''}`} onClick={() => setFilterPriority('all')}>{t('common_all')}</button>
             {Object.entries(PRIORITY_META).map(([key, meta]) => (
               <button
                 key={key}
@@ -305,7 +327,7 @@ export default function TaskManager() {
                 onClick={() => setFilterPriority(prev => prev === key ? 'all' : key)}
               >
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: meta.color, display: 'inline-block' }} />
-                {meta.label}
+                {t(meta.labelKey)}
               </button>
             ))}
           </div>
@@ -313,13 +335,13 @@ export default function TaskManager() {
         <div className="tasks-filter-group">
           <span className="tasks-filter-label"><Tag size={13} /> {t('task_filter_category')}</span>
           <div className="tasks-filter-pills">
-            <button className={`tasks-fp ${filterCategory === 'all' ? 'active' : ''}`} onClick={() => setFilterCategory('all')}>All</button>
+            <button className={`tasks-fp ${filterCategory === 'all' ? 'active' : ''}`} onClick={() => setFilterCategory('all')}>{t('common_all')}</button>
             {CATEGORIES.map(c => (
               <button
                 key={c}
                 className={`tasks-fp ${filterCategory === c ? 'active' : ''}`}
                 onClick={() => setFilterCategory(prev => prev === c ? 'all' : c)}
-              >{c}</button>
+              >{categoryLabel(c)}</button>
             ))}
           </div>
         </div>
@@ -363,7 +385,7 @@ export default function TaskManager() {
               const sMeta = STATUS_META[task.status] || STATUS_META.pending;
               const PIcon = pMeta.icon;
               const overdue = task.status !== 'done' && isOverdue(task.due_date);
-              const dueLabel = formatDue(task.due_date);
+              const dueLabel = formatDue(task.due_date, t);
 
               return (
                 <div
@@ -376,7 +398,7 @@ export default function TaskManager() {
                   <button
                     className="task-status-btn"
                     onClick={() => cycleStatus(task)}
-                    title={`Status: ${sMeta.label} — click to advance`}
+                    title={`${t('task_status_prefix')}: ${t(sMeta.labelKey)} - ${t('task_status_advance_hint')}`}
                     id={`task-status-${task.id}`}
                     style={{ color: sMeta.color }}
                   >
@@ -398,9 +420,9 @@ export default function TaskManager() {
                           className="task-priority-badge"
                           style={{ color: pMeta.color, background: pMeta.bg, border: `1px solid ${pMeta.border}` }}
                         >
-                          <PIcon size={10} /> {pMeta.label}
+                          <PIcon size={10} /> {t(pMeta.labelKey)}
                         </span>
-                        <span className="task-category-badge">{task.category}</span>
+                        <span className="task-category-badge">{categoryLabel(task.category)}</span>
                       </div>
                     </div>
 
@@ -411,7 +433,7 @@ export default function TaskManager() {
                     <div className="task-meta-row">
                       {task.zone && task.zone !== 'All Zones' && (
                         <span className="task-meta-chip">
-                          <Leaf size={11} /> {task.zone}
+                          <Leaf size={11} /> {zoneLabel(task.zone)}
                         </span>
                       )}
                       {dueLabel && (
@@ -420,7 +442,7 @@ export default function TaskManager() {
                         </span>
                       )}
                       <span className="task-status-label" style={{ color: sMeta.color }}>
-                        ● {sMeta.label}
+                        ● {t(sMeta.labelKey)}
                       </span>
                     </div>
                   </div>
@@ -430,7 +452,7 @@ export default function TaskManager() {
                     className="task-delete-btn"
                     onClick={() => handleDelete(task.id)}
                     id={`task-delete-${task.id}`}
-                    title="Delete task"
+                    title={t('task_delete_title')}
                   >
                     <Trash2 size={15} />
                   </button>
@@ -443,7 +465,7 @@ export default function TaskManager() {
 
       {filtered.length > 0 && (
         <p className="tasks-count text-secondary">
-          {filtered.length} of {tasks.length} {tasks.length === 1 ? 'task' : 'tasks'}
+          {filtered.length} {t('common_of')} {tasks.length} {tasks.length === 1 ? t('task_count_single') : t('task_count_plural')}
         </p>
       )}
     </div>
