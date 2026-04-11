@@ -11,7 +11,8 @@ import {
   X,
   BookOpen,
   BookMarked,
-  ClipboardList
+  ClipboardList,
+  FlaskConical
 } from 'lucide-react';
 import { useState } from 'react';
 import './Sidebar.css';
@@ -21,6 +22,7 @@ const navItems = [
   { path: '/analyze', icon: ScanLine, labelKey: 'nav_analyze' },
   { path: '/farm-map', icon: Map, labelKey: 'nav_farm_map' },
   { path: '/analytics', icon: BarChart3, labelKey: 'nav_analytics' },
+  { path: '/soil-health', icon: FlaskConical, labelKey: 'nav_soil_health' },
   { path: '/journal', icon: BookOpen, labelKey: 'nav_journal' },
   { path: '/library', icon: BookMarked, labelKey: 'nav_library' },
   { path: '/tasks', icon: ClipboardList, labelKey: 'nav_tasks' },

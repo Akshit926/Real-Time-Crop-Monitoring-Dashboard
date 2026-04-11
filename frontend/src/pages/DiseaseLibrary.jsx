@@ -452,6 +452,54 @@ const HI_DISEASE_OVERRIDES = {
   },
 };
 
+const HI_TO_MR_REPLACEMENTS = [
+  ['फसल', 'पीक'],
+  ['पत्तियां', 'पाने'],
+  ['पत्तियों', 'पानां'],
+  ['मिट्टी', 'माती'],
+  ['सिंचाई', 'सिंचन'],
+  ['रोग', 'आजार'],
+  ['उपचार', 'उपाय'],
+  ['कारण', 'कारणे'],
+  ['निगरानी', 'निरिक्षण'],
+  ['खेत', 'शेत'],
+  ['संतुलित', 'समतोल'],
+  ['अधिक', 'जास्त'],
+  ['कम', 'कमी'],
+  ['पानी', 'पाणी'],
+  ['मौसम', 'हवामान'],
+  ['जड़', 'मुळ'],
+  ['लक्षण', 'लक्षणे'],
+  ['फफूंद', 'बुरशी'],
+  ['कीट', 'किड'],
+];
+
+const toMarathiText = (input) => {
+  let output = input;
+  HI_TO_MR_REPLACEMENTS.forEach(([from, to]) => {
+    output = output.split(from).join(to);
+  });
+  return output;
+};
+
+const toMarathiValue = (value) => {
+  if (typeof value === 'string') {
+    return toMarathiText(value);
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => toMarathiValue(item));
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, item]) => [key, toMarathiValue(item)]),
+    );
+  }
+
+  return value;
+};
+
 const CROPS = ['All', 'Tomato', 'Potato', 'Corn', 'Rice', 'Wheat', 'Apple'];
 const TYPES = ['All', 'Fungal', 'Pest'];
 const SEVERITIES = ['All', 'critical', 'warning', 'observation'];
@@ -496,12 +544,13 @@ export default function DiseaseLibrary() {
   const spreadLabel = (spread) => t(SPREAD_KEY_MAP[spread] || spread);
 
   const localizedDiseases = useMemo(() => {
-    if (lang !== 'hi') {
+    if (lang !== 'hi' && lang !== 'mr') {
       return DISEASES;
     }
 
     return DISEASES.map((disease) => {
-      const override = HI_DISEASE_OVERRIDES[disease.id];
+      const baseOverride = HI_DISEASE_OVERRIDES[disease.id];
+      const override = lang === 'mr' ? toMarathiValue(baseOverride) : baseOverride;
       return override ? { ...disease, ...override } : disease;
     });
   }, [lang]);

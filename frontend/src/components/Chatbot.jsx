@@ -21,6 +21,14 @@ const quickReplies = {
     'बारिश से पहले क्या करें?',
     'इस प्रोजेक्ट का सारांश दें',
   ],
+  mr: [
+    'माझी पाने पिवळी का होत आहेत?',
+    'लीफ स्पॉटवर उपचार कसा करावा?',
+    'खताबाबत सर्वोत्तम सल्ला द्या',
+    'कीड नियंत्रणासाठी मदत हवी',
+    'पावसापूर्वी काय करावे?',
+    'या प्रोजेक्टचा सारांश द्या',
+  ],
 };
 
 export default function Chatbot() {
@@ -37,6 +45,8 @@ export default function Chatbot() {
   const inputRef = useRef(null);
   const recognitionRef = useRef(null);
   const isAiMode = assistantMode !== 'local';
+
+  const speechLocale = lang === 'hi' ? 'hi-IN' : lang === 'mr' ? 'mr-IN' : 'en-US';
 
   useEffect(() => {
     return () => {
@@ -71,7 +81,7 @@ export default function Chatbot() {
     try {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(sanitizedText);
-      utterance.lang = lang === 'hi' ? 'hi-IN' : 'en-US';
+      utterance.lang = speechLocale;
       utterance.rate = 0.95;
       window.speechSynthesis.speak(utterance);
     } catch {
@@ -150,7 +160,7 @@ export default function Chatbot() {
 
     try {
       const recognition = new SpeechRecognition();
-      recognition.lang = lang === 'hi' ? 'hi-IN' : 'en-US';
+      recognition.lang = speechLocale;
       recognition.interimResults = false;
       recognition.maxAlternatives = 1;
 
@@ -275,7 +285,7 @@ export default function Chatbot() {
 
           {messages.length <= 1 && (
             <div className="chatbot-quick-replies">
-              {(quickReplies[lang] || quickReplies.en).map((q, i) => (
+                {(quickReplies[lang] || quickReplies.en).map((q, i) => (
                 <button key={i} className="chatbot-quick-btn" onClick={() => handleSend(q)}>
                   {q}
                 </button>

@@ -2,12 +2,17 @@ import { createContext, useContext, useState, useCallback } from 'react';
 import translations from '../utils/translations';
 
 const LanguageContext = createContext();
+const LANGUAGE_ORDER = ['en', 'hi', 'mr'];
 
 export function LanguageProvider({ children }) {
   const [lang, setLang] = useState('en');
 
   const toggleLang = useCallback(() => {
-    setLang(prev => prev === 'en' ? 'hi' : 'en');
+    setLang((prev) => {
+      const index = LANGUAGE_ORDER.indexOf(prev);
+      const nextIndex = index >= 0 ? (index + 1) % LANGUAGE_ORDER.length : 0;
+      return LANGUAGE_ORDER[nextIndex];
+    });
   }, []);
 
   const t = useCallback((key) => {

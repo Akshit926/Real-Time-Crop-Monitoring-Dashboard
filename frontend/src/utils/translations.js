@@ -4,6 +4,7 @@ const translations = {
     nav_analyze: 'Analyze Crop',
     nav_farm_map: 'Farm Map',
     nav_analytics: 'Analytics',
+    nav_soil_health: 'Soil Health',
     nav_journal: 'Field Journal',
     brand_name: 'AgroVision',
     brand_tagline: 'Smart Crop Monitoring',
@@ -188,7 +189,7 @@ const translations = {
     alert_scan_reminder: 'Reminder: Schedule scan for Zone D',
     alert_healthy_zone_f: 'Zone F - Apple orchard looking great',
 
-    lang_toggle: 'Hindi',
+    lang_toggle: 'हिंदी',
     acres: 'acres',
 
     journal_title: 'Field Journal',
@@ -308,12 +309,37 @@ const translations = {
     task_save_error: 'Failed to save task. Please try again.',
     task_update_error: 'Could not update task status.',
     task_delete_error: 'Could not delete task.',
+
+    soil_title: 'Soil Health Analysis',
+    soil_subtitle: 'Analyze NPK, pH, and moisture to assess soil condition and get crop-ready advice',
+    soil_input_title: 'Soil Test Inputs',
+    soil_field_nitrogen: 'Nitrogen (N)',
+    soil_field_phosphorus: 'Phosphorus (P)',
+    soil_field_potassium: 'Potassium (K)',
+    soil_field_ph: 'Soil pH',
+    soil_field_moisture: 'Moisture (%)',
+    soil_field_organic_carbon: 'Organic Carbon (%)',
+    soil_field_ec: 'Electrical Conductivity (dS/m)',
+    soil_optional: 'Optional',
+    soil_generate_report: 'Analyze Soil & Generate Report',
+    soil_generating: 'Generating report…',
+    soil_placeholder_title: 'Add soil values to begin analysis',
+    soil_placeholder_desc: 'You will get health status, root causes, corrective actions, crop suggestions, and an AI report.',
+    soil_reasons_title: 'Why This Status?',
+    soil_solutions_title: 'How To Improve',
+    soil_crops_title: 'Suggested Crops',
+    soil_metrics_title: 'Metric Breakdown',
+    soil_report_title: 'Soil Health Report',
+    soil_source_ai: 'AI-generated report',
+    soil_source_local: 'Rule-based report',
+    soil_error_default: 'Soil analysis failed. Please try again.',
   },
   hi: {
     nav_dashboard: 'डैशबोर्ड',
     nav_analyze: 'फसल विश्लेषण',
     nav_farm_map: 'फार्म मैप',
     nav_analytics: 'विश्लेषिकी',
+    nav_soil_health: 'मिट्टी स्वास्थ्य',
     nav_journal: 'फील्ड डायरी',
     brand_name: 'एग्रोविजन',
     brand_tagline: 'स्मार्ट फसल निगरानी',
@@ -498,7 +524,7 @@ const translations = {
     alert_scan_reminder: 'अनुस्मारक: ज़ोन D का स्कैन करें',
     alert_healthy_zone_f: 'ज़ोन F - सेब का बगीचा स्वस्थ',
 
-    lang_toggle: 'English',
+    lang_toggle: 'मराठी',
     acres: 'एकड़',
 
     journal_title: 'फील्ड डायरी',
@@ -618,7 +644,95 @@ const translations = {
     task_save_error: 'कार्य सहेजा नहीं जा सका।',
     task_update_error: 'स्थिति अपडेट नहीं हो सकी।',
     task_delete_error: 'कार्य हटाया नहीं जा सका।',
+
+    soil_title: 'मिट्टी स्वास्थ्य विश्लेषण',
+    soil_subtitle: 'NPK, pH और नमी के आधार पर मिट्टी की स्थिति जांचें और फसल सलाह पाएं',
+    soil_input_title: 'मिट्टी परीक्षण इनपुट',
+    soil_field_nitrogen: 'नाइट्रोजन (N)',
+    soil_field_phosphorus: 'फॉस्फोरस (P)',
+    soil_field_potassium: 'पोटाशियम (K)',
+    soil_field_ph: 'मिट्टी pH',
+    soil_field_moisture: 'नमी (%)',
+    soil_field_organic_carbon: 'जैविक कार्बन (%)',
+    soil_field_ec: 'विद्युत चालकता (dS/m)',
+    soil_optional: 'वैकल्पिक',
+    soil_generate_report: 'मिट्टी विश्लेषण और रिपोर्ट बनाएं',
+    soil_generating: 'रिपोर्ट बन रही है…',
+    soil_placeholder_title: 'विश्लेषण शुरू करने के लिए मान दर्ज करें',
+    soil_placeholder_desc: 'आपको स्वास्थ्य स्थिति, कारण, सुधार उपाय, सुझाई गई फसलें और AI रिपोर्ट मिलेगी।',
+    soil_reasons_title: 'स्थिति के कारण',
+    soil_solutions_title: 'सुधार कैसे करें',
+    soil_crops_title: 'सुझाई गई फसलें',
+    soil_metrics_title: 'पैरामीटर विवरण',
+    soil_report_title: 'मिट्टी स्वास्थ्य रिपोर्ट',
+    soil_source_ai: 'AI-निर्मित रिपोर्ट',
+    soil_source_local: 'नियम-आधारित रिपोर्ट',
+    soil_error_default: 'मिट्टी विश्लेषण असफल रहा। कृपया फिर से प्रयास करें।',
   },
+};
+
+const HI_TO_MR_REPLACEMENTS = [
+  ['फसल', 'पीक'],
+  ['फसलों', 'पिकांच्या'],
+  ['मिट्टी', 'माती'],
+  ['खेत', 'शेत'],
+  ['सिंचाई', 'सिंचन'],
+  ['रोग', 'आजार'],
+  ['कीट', 'किड'],
+  ['सलाह', 'सल्ला'],
+  ['सुझाव', 'सल्ले'],
+  ['कारण', 'कारणे'],
+  ['उपचार', 'उपाय'],
+  ['नमी', 'आर्द्रता'],
+  ['मौसम', 'हवामान'],
+  ['पत्तियां', 'पाने'],
+  ['पत्तियों', 'पानां'],
+  ['डैशबोर्ड', 'डॅशबोर्ड'],
+  ['विश्लेषण', 'विश्लेषण'],
+  ['सभी', 'सर्व'],
+  ['नया', 'नवीन'],
+  ['रद्द करें', 'रद्द करा'],
+  ['सहेजें', 'जतन करा'],
+  ['जोड़ें', 'जोडा'],
+  ['जोड़ें', 'जोडा'],
+  ['हटाएं', 'काढा'],
+  ['हटाएं', 'काढा'],
+  ['स्वस्थ', 'निरोगी'],
+  ['चेतावनी', 'इशारा'],
+  ['गंभीर', 'गंभीर'],
+  ['कम', 'कमी'],
+  ['अधिक', 'जास्त'],
+];
+
+const toMarathiText = (input) => {
+  let output = input;
+  HI_TO_MR_REPLACEMENTS.forEach(([from, to]) => {
+    output = output.split(from).join(to);
+  });
+  return output;
+};
+
+const toMarathiValue = (value) => {
+  if (typeof value === 'string') {
+    return toMarathiText(value);
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => toMarathiValue(item));
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, item]) => [key, toMarathiValue(item)]),
+    );
+  }
+
+  return value;
+};
+
+translations.mr = {
+  ...toMarathiValue(translations.hi),
+  lang_toggle: 'English',
 };
 
 export default translations;

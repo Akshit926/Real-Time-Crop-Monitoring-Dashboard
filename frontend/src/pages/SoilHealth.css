@@ -1,0 +1,269 @@
+/* Soil Health Analysis Page */
+
+.soil-page {
+  max-width: 1200px;
+  padding-bottom: 80px;
+}
+
+.soil-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.soil-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.soil-header-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, #0ea5e9, #0284c7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f0f9ff;
+  box-shadow: 0 4px 16px rgba(14, 165, 233, 0.35);
+  flex-shrink: 0;
+}
+
+.soil-grid {
+  display: grid;
+  grid-template-columns: minmax(320px, 420px) 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+.soil-form-card {
+  padding: 22px;
+  border: 1px solid rgba(14, 165, 233, 0.28);
+  box-shadow: 0 0 24px rgba(14, 165, 233, 0.08);
+}
+
+.soil-section-title {
+  margin-bottom: 16px;
+}
+
+.soil-fields-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.soil-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.soil-field-full {
+  grid-column: 1 / -1;
+}
+
+.soil-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.soil-input {
+  width: 100%;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  transition: border-color var(--transition-fast);
+}
+
+.soil-input:focus {
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.14);
+}
+
+.soil-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.soil-submit-wrap {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.soil-output-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.soil-placeholder {
+  padding: 28px;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 10px;
+}
+
+.soil-error-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.soil-report-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.soil-summary {
+  padding: 14px 16px;
+}
+
+.soil-summary-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.soil-score {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #7dd3fc;
+  font-family: var(--font-display);
+}
+
+.soil-source-row {
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+}
+
+.soil-sections-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.soil-section {
+  padding: 16px;
+}
+
+.soil-list {
+  margin-top: 10px;
+  padding-left: 16px;
+  display: grid;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.soil-crop-chips {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.soil-crop-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 11px;
+  border-radius: var(--radius-full);
+  background: rgba(16, 185, 129, 0.14);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #86efac;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.soil-metric-grid {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.soil-metric-card {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 10px 11px;
+}
+
+.soil-metric-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--text-primary);
+}
+
+.soil-metric-score {
+  color: #22d3ee;
+  font-weight: 700;
+}
+
+.soil-metric-meta {
+  margin-top: 6px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+}
+
+.soil-metric-note {
+  margin-top: 6px;
+  color: var(--text-tertiary);
+  font-size: 0.75rem;
+}
+
+.soil-report-text {
+  margin-top: 10px;
+  color: var(--text-secondary);
+  white-space: pre-line;
+  line-height: 1.7;
+}
+
+@media (max-width: 1024px) {
+  .soil-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .soil-fields-grid,
+  .soil-sections-grid,
+  .soil-metric-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .soil-submit-wrap {
+    justify-content: stretch;
+  }
+
+  .soil-submit-wrap .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

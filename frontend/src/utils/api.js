@@ -77,6 +77,16 @@ export async function getWeather(params = {}) {
   return response.json();
 }
 
+export async function analyzeSoilHealth(payload) {
+  const response = await fetchWithRetry(`${API_BASE}/soil-health`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  return response.json();
+}
+
 // ── Field Journal ──────────────────────────────────────────────────
 
 export async function getJournalEntries() {

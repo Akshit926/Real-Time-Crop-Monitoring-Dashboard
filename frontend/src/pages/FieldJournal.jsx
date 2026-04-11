@@ -45,7 +45,8 @@ const WEATHER_ICONS = {
 
 function formatDate(isoStr, lang) {
   const d = new Date(isoStr);
-  return d.toLocaleString(lang === 'hi' ? 'hi-IN' : 'en-IN', {
+  const locale = lang === 'hi' ? 'hi-IN' : lang === 'mr' ? 'mr-IN' : 'en-IN';
+  return d.toLocaleString(locale, {
     day: '2-digit', month: 'short', year: 'numeric',
     hour: '2-digit', minute: '2-digit', hour12: true,
   });
