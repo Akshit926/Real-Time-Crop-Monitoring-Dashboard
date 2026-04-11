@@ -100,6 +100,7 @@ body::before {
     radial-gradient(ellipse 50% 60% at 50% 50%, rgba(139, 92, 246, 0.04) 0%, transparent 50%);
   z-index: 0;
   pointer-events: none;
+  animation: auroraShift 18s ease-in-out infinite alternate;
 }
 
 #root {
@@ -177,6 +178,12 @@ input, textarea {
   min-height: 100vh;
 }
 
+.app-layout-locked {
+  pointer-events: none;
+  user-select: none;
+  filter: blur(1.5px) saturate(0.92);
+}
+
 .main-content {
   flex: 1;
   margin-left: var(--sidebar-width);
@@ -184,6 +191,7 @@ input, textarea {
   padding-top: calc(var(--header-height) + 24px);
   min-height: 100vh;
   transition: margin-left var(--transition-base);
+  animation: contentRise 0.55s ease-out both;
 }
 
 /* ── Typography ─────────────────────────────────────────────── */
@@ -344,6 +352,29 @@ input, textarea {
   from {
     opacity: 0;
     transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes auroraShift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(2%, -1%, 0) scale(1.03);
+  }
+  100% {
+    transform: translate3d(-2%, 2%, 0) scale(1.02);
+  }
+}
+
+@keyframes contentRise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
   }
   to {
     opacity: 1;

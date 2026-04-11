@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Leaf, CloudSun, Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { sendChatMessage, getWeather } from '../utils/api';
+import { getFeatureContext } from '../utils/featureContext';
 import './Chatbot.css';
 
 const quickReplies = {
@@ -12,6 +13,9 @@ const quickReplies = {
     'Pest control help',
     'What should I do before rain?',
     'Summarize this project',
+    'Summarize my latest crop analysis result',
+    'Summarize my latest soil health result',
+    'Summarize all my latest feature results',
   ],
   hi: [
     'पत्तियां पीली क्यों हैं?',
@@ -20,6 +24,9 @@ const quickReplies = {
     'कीट नियंत्रण मदद',
     'बारिश से पहले क्या करें?',
     'इस प्रोजेक्ट का सारांश दें',
+    'मेरे नवीनतम फसल विश्लेषण परिणाम का सारांश दें',
+    'मेरे नवीनतम मिट्टी स्वास्थ्य परिणाम का सारांश दें',
+    'मेरे सभी नवीनतम फीचर परिणामों का सारांश दें',
   ],
   mr: [
     'माझी पाने पिवळी का होत आहेत?',
@@ -28,6 +35,9 @@ const quickReplies = {
     'कीड नियंत्रणासाठी मदत हवी',
     'पावसापूर्वी काय करावे?',
     'या प्रोजेक्टचा सारांश द्या',
+    'माझ्या ताज्या पीक विश्लेषण निकालाचा सारांश द्या',
+    'माझ्या ताज्या माती आरोग्य निकालाचा सारांश द्या',
+    'माझे सर्व ताजे फीचर निकाल एकत्रित सारांशित करा',
   ],
 };
 
@@ -135,7 +145,23 @@ export default function Chatbot() {
     setIsTyping(true);
 
     try {
-      const data = await sendChatMessage(text.trim(), lang, weatherContext);
+      const storedFeatureContext = getFeatureContext();
+      const featureContext = {
+        ...storedFeatureContext,
+      };
+
+      if (weatherContext) {
+        featureContext.weather = {
+          condition: weatherContext.condition,
+          temperature_c: weatherContext.temperature_c,
+          humidity: weatherContext.humidity,
+          precipitation_probability: weatherContext.precipitation_probability,
+          disease_risk: weatherContext.disease_risk,
+          irrigation: weatherContext.irrigation,
+        };
+      }
+
+      const data = await sendChatMessage(text.trim(), lang, weatherContext, featureContext);
       setAssistantMode(data.source || 'local');
       appendBotMessage(data.response, data.source || 'local');
       speakText(data.response);

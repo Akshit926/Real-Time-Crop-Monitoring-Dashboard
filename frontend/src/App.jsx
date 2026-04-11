@@ -1,7 +1,9 @@
+import { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import AlertTicker from './components/AlertTicker';
 import Chatbot from './components/Chatbot';
+import CropScanIntro from './components/CropScanIntro';
 
 // Pages
 import Dashboard from './pages/Dashboard';
@@ -17,32 +19,43 @@ import SoilHealth from './pages/SoilHealth';
 import './index.css';
 
 function App() {
-  return (
-    <div className="app-layout">
-      {/* Real-time Alert Banner */}
-      <AlertTicker />
-      
-      {/* Navigation Sidebar */}
-      <Sidebar />
-      
-      {/* Main Page Area */}
-      <main className="main-content">
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/analyze" element={<Analyze />} />
-          <Route path="/farm-map" element={<FarmMap />} />
-          <Route path="/analytics" element={<Analytics />} />
-          <Route path="/soil-health" element={<SoilHealth />} />
-          <Route path="/journal" element={<FieldJournal />} />
-          <Route path="/library" element={<DiseaseLibrary />} />
-          <Route path="/tasks" element={<TaskManager />} />
-          <Route path="*" element={<Dashboard />} />
-        </Routes>
-      </main>
+  const [showIntro, setShowIntro] = useState(true);
 
-      {/* Floating AI Assistant */}
-      <Chatbot />
-    </div>
+  useEffect(() => {
+    const timer = window.setTimeout(() => setShowIntro(false), 2400);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  return (
+    <>
+      {showIntro && <CropScanIntro />}
+
+      <div className={`app-layout ${showIntro ? 'app-layout-locked' : ''}`}>
+        {/* Real-time Alert Banner */}
+        <AlertTicker />
+
+        {/* Navigation Sidebar */}
+        <Sidebar />
+
+        {/* Main Page Area */}
+        <main className="main-content">
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/analyze" element={<Analyze />} />
+            <Route path="/farm-map" element={<FarmMap />} />
+            <Route path="/analytics" element={<Analytics />} />
+            <Route path="/soil-health" element={<SoilHealth />} />
+            <Route path="/journal" element={<FieldJournal />} />
+            <Route path="/library" element={<DiseaseLibrary />} />
+            <Route path="/tasks" element={<TaskManager />} />
+            <Route path="*" element={<Dashboard />} />
+          </Routes>
+        </main>
+
+        {/* Floating AI Assistant */}
+        <Chatbot />
+      </div>
+    </>
   );
 }
 

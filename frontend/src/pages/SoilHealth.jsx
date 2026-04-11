@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { FlaskConical, Sparkles, AlertTriangle, Droplets, Leaf } from 'lucide-react';
 import { analyzeSoilHealth } from '../utils/api';
+import { setFeatureContext } from '../utils/featureContext';
 import './SoilHealth.css';
 
 const initialForm = {
@@ -50,6 +51,14 @@ export default function SoilHealth() {
 
       const data = await analyzeSoilHealth(payload);
       setResult(data);
+      setFeatureContext('soil_health', {
+        health_status: data.health_status,
+        score: data.score,
+        reasons: data.reasons,
+        solutions: data.solutions,
+        suggested_crops: data.suggested_crops,
+        report_source: data.report_source,
+      });
     } catch (err) {
       setError(err.message || t('soil_error_default'));
     } finally {

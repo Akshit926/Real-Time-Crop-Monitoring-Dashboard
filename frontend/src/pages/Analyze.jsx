@@ -3,8 +3,11 @@ import { useLanguage } from '../context/LanguageContext';
 import { predictDisease } from '../utils/api';
 import {
   Upload, Camera, X, Loader, CheckCircle2, AlertTriangle,
-  Droplets, Bug, FlaskConical, RefreshCw
+  Droplets, Bug, FlaskConical, RefreshCw, Download
 } from 'lucide-react';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
+import { setFeatureContext } from '../utils/featureContext';
 import './Analyze.css';
 
 export default function Analyze() {
@@ -12,6 +15,7 @@ export default function Analyze() {
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+  const resultPanelRef = useRef(null);
 
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -20,6 +24,7 @@ export default function Analyze() {
   const [error, setError] = useState(null);
   const [cameraActive, setCameraActive] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
 
   const handleFile = useCallback((file) => {
     if (!file || !file.type.startsWith('image/')) return;
@@ -45,6 +50,14 @@ export default function Analyze() {
     try {
       const data = await predictDisease(image);
       setResult(data);
+      setFeatureContext('analyze', {
+        crop: data.crop,
+        status: data.status,
+        disease: data.disease,
+        confidence: data.confidence,
+        reason: data.reason,
+        recommendations: data.recommendations,
+      });
     } catch (err) {
       setError(err.message || t('analyze_error_failed'));
     } finally {
@@ -95,6 +108,48 @@ export default function Analyze() {
     setResult(null);
     setError(null);
     stopCamera();
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!resultPanelRef.current || !result) {
+      return;
+    }
+
+    setDownloadingPdf(true);
+    try {
+      const canvas = await html2canvas(resultPanelRef.current, {
+        scale: 2,
+        backgroundColor: '#0a0f1a',
+        useCORS: true,
+      });
+
+      const imageData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'pt', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      const margin = 24;
+      const imageWidth = pageWidth - margin * 2;
+      const imageHeight = (canvas.height * imageWidth) / canvas.width;
+
+      let remainingHeight = imageHeight;
+      let yOffset = margin;
+
+      pdf.addImage(imageData, 'PNG', margin, yOffset, imageWidth, imageHeight, undefined, 'FAST');
+      remainingHeight -= pageHeight - margin * 2;
+
+      while (remainingHeight > 0) {
+        pdf.addPage();
+        yOffset = margin - (imageHeight - remainingHeight);
+        pdf.addImage(imageData, 'PNG', margin, yOffset, imageWidth, imageHeight, undefined, 'FAST');
+        remainingHeight -= pageHeight - margin * 2;
+      }
+
+      const dateStamp = new Date().toISOString().slice(0, 10);
+      pdf.save(`agrovision-analysis-${dateStamp}.pdf`);
+    } finally {
+      setDownloadingPdf(false);
+    }
   };
 
   return (
@@ -205,8 +260,14 @@ export default function Analyze() {
           )}
 
           {result && !loading && (
-            <div className="result-panel animate-fade-in-up">
-              <h2 className="heading-lg" style={{ marginBottom: 20 }}>{t('results_title')}</h2>
+            <div className="result-panel animate-fade-in-up" ref={resultPanelRef}>
+              <div className="result-panel-header-row">
+                <h2 className="heading-lg">{t('results_title')}</h2>
+                <button className="btn btn-secondary" onClick={handleDownloadPdf} disabled={downloadingPdf} type="button">
+                  <Download size={16} />
+                  {downloadingPdf ? t('analyze_downloading_pdf') : t('analyze_download_pdf')}
+                </button>
+              </div>
 
               {/* Status Card */}
               <div className={`result-status-card glass-card ${result.status === 'Healthy' ? 'result-healthy' : 'result-diseased'}`}>

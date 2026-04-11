@@ -19,11 +19,12 @@
   "dependencies": {
     "chart.js": "^4.5.1",
     "framer-motion": "^12.38.0",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.2.1",
     "lucide-react": "^1.8.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
     "react-chartjs-2": "^5.3.1",
+    "react-dom": "^19.0.0",
     "react-router-dom": "^7.14.0"
-  },
-  "optionalDependencies": {}
+  }
 }

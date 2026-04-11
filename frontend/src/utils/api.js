@@ -47,11 +47,11 @@ export async function predictDisease(imageFile) {
   return response.json();
 }
 
-export async function sendChatMessage(message, lang = 'en', weather = null) {
+export async function sendChatMessage(message, lang = 'en', weather = null, featureContext = null) {
   const response = await fetchWithRetry(`${API_BASE}/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message, lang, weather }),
+    body: JSON.stringify({ message, lang, weather, feature_context: featureContext }),
   });
 
   return response.json();
