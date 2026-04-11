@@ -1,4 +1,8 @@
-const API_BASE = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '');
+// In production (Cloud Run): VITE_API_BASE_URL="" → same-origin calls (/predict, /chat, etc.)
+// In dev mode: falls back to localhost with /api prefix (Vite proxy rewrites /api → backend)
+const API_BASE = import.meta.env.VITE_API_BASE_URL !== undefined
+  ? import.meta.env.VITE_API_BASE_URL.replace(/\/$/, '')
+  : (import.meta.env.DEV ? '/api' : '');
 
 async function fetchWithRetry(url, options = {}, retries = 2, delayMs = 1500) {
   try {
@@ -59,6 +63,20 @@ export async function sendChatMessage(message, lang = 'en', weather = null, feat
 
 export async function getFarmZones() {
   const response = await fetchWithRetry(`${API_BASE}/zones`);
+  return response.json();
+}
+
+export async function getProfitOptions() {
+  const response = await fetchWithRetry(`${API_BASE}/profit/crops`);
+  return response.json();
+}
+
+export async function calculateProfit(payload) {
+  const response = await fetchWithRetry(`${API_BASE}/profit`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
   return response.json();
 }
 

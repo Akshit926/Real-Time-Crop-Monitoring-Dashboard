@@ -2,8 +2,13 @@
 AgroVision Backend — FastAPI application for crop disease prediction and chat.
 """
 
+import os
+from pathlib import Path
+
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timezone
@@ -180,10 +185,8 @@ FARM_ZONES = [
 
 # ── Endpoints ─────────────────────────────────────────────────────
 
-@app.get("/")
-async def root():
-    """Health check endpoint."""
-    return {"status": "ok", "app": "AgroVision API", "version": "1.0.0"}
+# The root endpoint / is handled by the React SPA catch-all when deployed.
+# (If local dev, you'll see "Not Found" at / without the frontend built, but /health is available)
 
 
 @app.get("/health")
@@ -706,6 +709,24 @@ async def soil_health_endpoint(req: SoilHealthRequest):
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Soil analysis failed: {str(e)}")
+
+
+# ── Serve React Frontend (Cloud Run production) ─────────────────
+# In the Cloud Run container, the built frontend lives at /app/static.
+# Mount it AFTER all API routes so API endpoints take priority.
+_static_dir = Path(__file__).resolve().parent / "static"
+if _static_dir.is_dir():
+    # Serve static assets (JS, CSS, images, etc.)
+    app.mount("/assets", StaticFiles(directory=str(_static_dir / "assets")), name="assets")
+
+    # Catch-all: return index.html for any non-API route (React Router SPA)
+    @app.get("/{full_path:path}")
+    async def serve_spa(full_path: str):
+        """Serve the React SPA for client-side routing."""
+        file_path = _static_dir / full_path
+        if file_path.is_file():
+            return FileResponse(str(file_path))
+        return FileResponse(str(_static_dir / "index.html"))
 
 
 if __name__ == "__main__":

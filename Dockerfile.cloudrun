@@ -1,0 +1,43 @@
+# ── Stage 1: Build React Frontend ──────────────────────────────────
+FROM node:22-alpine AS frontend-build
+
+WORKDIR /app/frontend
+
+# Install dependencies first (layer caching)
+COPY frontend/package.json ./
+RUN npm install --legacy-peer-deps
+
+# Copy frontend source and build
+COPY frontend/ ./
+
+# In production build, API calls go to same origin (no prefix needed)
+ENV VITE_API_BASE_URL=""
+RUN npm run build
+
+
+# ── Stage 2: Python Backend + Static Frontend ─────────────────────
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+# Install Python dependencies first (layer caching)
+COPY backend/requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r /app/requirements.txt
+
+# Copy backend source code (includes crop_model.h5)
+COPY backend/ /app/
+
+# Copy built frontend from Stage 1
+COPY --from=frontend-build /app/frontend/dist /app/static
+
+# Cloud Run injects PORT env var (default 8080)
+ENV PORT=8080
+
+EXPOSE ${PORT}
+
+# Use shell form so $PORT is expanded at runtime
+CMD uvicorn main:app --host 0.0.0.0 --port $PORT --workers 1 --timeout-keep-alive 30

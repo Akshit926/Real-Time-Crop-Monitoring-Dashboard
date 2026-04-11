@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard';
 import Analyze from './pages/Analyze';
 import FarmMap from './pages/FarmMap';
 import Analytics from './pages/Analytics';
+import ProfitEstimator from './pages/ProfitEstimator';
 import FieldJournal from './pages/FieldJournal';
 import DiseaseLibrary from './pages/DiseaseLibrary';
 import TaskManager from './pages/TaskManager';
@@ -45,6 +46,7 @@ function App() {
             <Route path="/analyze" element={<Analyze />} />
             <Route path="/farm-map" element={<FarmMap />} />
             <Route path="/analytics" element={<Analytics />} />
+            <Route path="/profit" element={<ProfitEstimator />} />
             <Route path="/soil-health" element={<SoilHealth />} />
             <Route path="/journal" element={<FieldJournal />} />
             <Route path="/library" element={<DiseaseLibrary />} />

@@ -40,6 +40,7 @@ function getStatusBg(status) {
 // ── CropGroupCard ─────────────────────────────────────────────────────────────
 
 function CropGroupCard({ crop, scans, onDelete }) {
+  const { t } = useLanguage();
   const [expanded, setExpanded] = useState(false);
   const latestScan = scans[scans.length - 1];
   const diseasedScans = scans.filter(s => s.status === 'Diseased');
@@ -59,10 +60,10 @@ function CropGroupCard({ crop, scans, onDelete }) {
           <h3 className="summ-crop-name">{crop}</h3>
           <div className="summ-crop-meta">
             <span className="summ-badge" style={{ background: getStatusBg(overallStatus), color: getStatusColor(overallStatus) }}>
-              {overallStatus}
+              {overallStatus === 'Healthy' ? t('summ_stat_healthy') : t('summ_stat_diseased')}
             </span>
-            <span className="summ-meta-pill">{scans.length} scan{scans.length !== 1 ? 's' : ''}</span>
-            <span className="summ-meta-pill">Avg confidence: {avgConfidence}%</span>
+            <span className="summ-meta-pill">{scans.length} {scans.length !== 1 ? t('summ_card_scans') : t('summ_card_scan')}</span>
+            <span className="summ-meta-pill">{t('summ_card_avg_conf')} {avgConfidence}%</span>
           </div>
         </div>
         <button className="summ-expand-btn" aria-label="Toggle details">
@@ -74,12 +75,12 @@ function CropGroupCard({ crop, scans, onDelete }) {
       <div className="summ-quick-row">
         <div className="summ-quick-stat">
           <CheckCircle2 size={16} color="var(--status-healthy)" />
-          <span>{healthyCount} Healthy</span>
+          <span>{healthyCount} {t('summ_stat_healthy')}</span>
         </div>
         <div className="summ-divider-v" />
         <div className="summ-quick-stat">
           <AlertTriangle size={16} color="var(--status-critical)" />
-          <span>{diseasedScans.length} Diseased</span>
+          <span>{diseasedScans.length} {t('summ_stat_diseased')}</span>
         </div>
         {diseaseNames.length > 0 && (
           <>
@@ -100,7 +101,7 @@ function CropGroupCard({ crop, scans, onDelete }) {
           {latestScan.reason && (
             <div className="summ-detail-block">
               <div className="summ-detail-label">
-                <Info size={14} /> Why is this happening?
+                <Info size={14} /> {t('summ_why')}
               </div>
               <p className="summ-detail-text">{latestScan.reason}</p>
             </div>
@@ -110,7 +111,7 @@ function CropGroupCard({ crop, scans, onDelete }) {
           {latestScan.description && (
             <div className="summ-detail-block">
               <div className="summ-detail-label">
-                <ShieldAlert size={14} /> About this condition
+                <ShieldAlert size={14} /> {t('summ_about')}
               </div>
               <p className="summ-detail-text">{latestScan.description}</p>
             </div>
@@ -124,7 +125,7 @@ function CropGroupCard({ crop, scans, onDelete }) {
                   <div className="summ-rec-icon" style={{ background: 'rgba(59,130,246,0.12)', color: '#60a5fa' }}>
                     <FlaskConical size={16} />
                   </div>
-                  <div className="summ-rec-label">Treatment</div>
+                  <div className="summ-rec-label">{t('rec_treatment')}</div>
                   <p className="summ-rec-text">{latestScan.recommendations.treatment}</p>
                 </div>
               )}
@@ -133,7 +134,7 @@ function CropGroupCard({ crop, scans, onDelete }) {
                   <div className="summ-rec-icon" style={{ background: 'rgba(34,197,94,0.12)', color: '#4ade80' }}>
                     <Droplets size={16} />
                   </div>
-                  <div className="summ-rec-label">Environment</div>
+                  <div className="summ-rec-label">{t('rec_environment')}</div>
                   <p className="summ-rec-text">{latestScan.recommendations.environment}</p>
                 </div>
               )}
@@ -142,7 +143,7 @@ function CropGroupCard({ crop, scans, onDelete }) {
                   <div className="summ-rec-icon" style={{ background: 'rgba(245,158,11,0.12)', color: '#fbbf24' }}>
                     <Bug size={16} />
                   </div>
-                  <div className="summ-rec-label">Field Actions</div>
+                  <div className="summ-rec-label">{t('rec_actions')}</div>
                   <p className="summ-rec-text">{latestScan.recommendations.field_actions}</p>
                 </div>
               )}
@@ -153,25 +154,25 @@ function CropGroupCard({ crop, scans, onDelete }) {
           <div className="summ-save-crop-block">
             <div className="summ-detail-label">
               <Sprout size={14} />
-              How to Save This Crop
+              {t('summ_how_save')}
             </div>
             <ul className="summ-save-list">
               {overallStatus === 'Diseased' ? (
                 <>
-                  <li>🔍 Immediately isolate affected plants to prevent spread to healthy ones.</li>
-                  <li>✂️ Prune and dispose of heavily infected leaves, stems, or fruit — do not compost.</li>
-                  <li>💊 Follow the treatment plan above and apply at the recommended dosage.</li>
-                  <li>💧 Switch to drip irrigation to keep foliage dry and reduce fungal pressure.</li>
-                  <li>📋 Re-scan after 5–7 days to track recovery progress.</li>
-                  <li>🌱 Consider planting disease-resistant varieties in the next season.</li>
+                  <li>{t('summ_save_d1')}</li>
+                  <li>{t('summ_save_d2')}</li>
+                  <li>{t('summ_save_d3')}</li>
+                  <li>{t('summ_save_d4')}</li>
+                  <li>{t('summ_save_d5')}</li>
+                  <li>{t('summ_save_d6')}</li>
                 </>
               ) : (
                 <>
-                  <li>✅ Crops look healthy — continue current irrigation and fertilization schedule.</li>
-                  <li>🔎 Keep up weekly scouting to catch any early symptoms.</li>
-                  <li>🌿 Maintain good airflow by pruning crowded canopy areas.</li>
-                  <li>📊 Log field observations in the Field Journal to track trends over time.</li>
-                  <li>🧪 Schedule a soil health check every 4–6 weeks for optimal nutrition.</li>
+                  <li>{t('summ_save_h1')}</li>
+                  <li>{t('summ_save_h2')}</li>
+                  <li>{t('summ_save_h3')}</li>
+                  <li>{t('summ_save_h4')}</li>
+                  <li>{t('summ_save_h5')}</li>
                 </>
               )}
             </ul>
@@ -179,7 +180,7 @@ function CropGroupCard({ crop, scans, onDelete }) {
 
           {/* Individual Scan Timeline */}
           <div className="summ-timeline">
-            <div className="summ-detail-label"><BarChart3 size={14} /> Scan Timeline</div>
+            <div className="summ-detail-label"><BarChart3 size={14} /> {t('summ_timeline')}</div>
             <div className="summ-timeline-list">
               {[...scans].reverse().map(scan => (
                 <div key={scan.id} className="summ-timeline-row">
@@ -335,15 +336,15 @@ export default function Summarizer() {
     return (
       <div className="summ-page">
         <div className="page-header animate-fade-in-up">
-          <h1 className="heading-xl">Crop Scan Summarizer</h1>
+          <h1 className="heading-xl">{t('summ_page_title')}</h1>
           <p className="text-secondary" style={{ marginTop: 4 }}>
-            Comprehensive analysis of all your tested plants
+            {t('summ_page_subtitle_empty')}
           </p>
         </div>
         <div className="summ-empty glass-card-static animate-fade-in-up">
           <ClipboardList size={52} strokeWidth={1.2} color="var(--text-tertiary)" />
           <h2 className="heading-md" style={{ color: 'var(--text-tertiary)', marginTop: 16 }}>
-            No scans recorded yet
+            {t('summ_empty_title')}
           </h2>
           <p className="text-secondary" style={{ textAlign: 'center', maxWidth: 400, marginTop: 8 }}>
             Go to <strong>Analyze Crop</strong> and run at least one scan.
@@ -359,14 +360,14 @@ export default function Summarizer() {
       {/* ── Header ── */}
       <div className="page-header animate-fade-in-up">
         <div>
-          <h1 className="heading-xl">Crop Scan Summarizer</h1>
+          <h1 className="heading-xl">{t('summ_page_title')}</h1>
           <p className="text-secondary" style={{ marginTop: 4 }}>
-            Full report for {uniqueCrops} crop type{uniqueCrops !== 1 ? 's' : ''} across {totalScans} scan{totalScans !== 1 ? 's' : ''}
+            <span dangerouslySetInnerHTML={{ __html: t('summ_page_subtitle').replace('{crops}', uniqueCrops).replace('{scans}', totalScans) }} />
           </p>
         </div>
         <div className="summ-header-actions">
           <button className="btn btn-secondary" onClick={refresh}>
-            <RefreshCw size={16} /> Refresh
+            <RefreshCw size={16} /> {t('summ_btn_refresh')}
           </button>
           <button
             className="btn btn-secondary"
@@ -374,14 +375,14 @@ export default function Summarizer() {
             disabled={downloading}
           >
             <Download size={16} />
-            {downloading ? 'Exporting…' : 'Export PDF'}
+            {downloading ? t('summ_btn_exporting') : t('summ_btn_export')}
           </button>
           <button
             className="btn btn-ghost"
             style={{ color: 'var(--status-critical)' }}
             onClick={() => setConfirmClear(true)}
           >
-            <Trash2 size={16} /> Clear All
+            <Trash2 size={16} /> {t('summ_btn_clear_all')}
           </button>
         </div>
       </div>
@@ -391,16 +392,16 @@ export default function Summarizer() {
         <div className="summ-confirm-overlay">
           <div className="summ-confirm-box glass-card">
             <AlertTriangle size={28} color="var(--status-critical)" />
-            <h3 className="heading-md" style={{ marginTop: 12 }}>Clear all scan history?</h3>
+            <h3 className="heading-md" style={{ marginTop: 12 }}>{t('summ_confirm_title')}</h3>
             <p className="text-secondary" style={{ textAlign: 'center', marginTop: 6 }}>
-              This will permanently delete {totalScans} scan records. This action cannot be undone.
+              {t('summ_confirm_desc').replace('{count}', totalScans)}
             </p>
             <div style={{ display: 'flex', gap: 12, marginTop: 20 }}>
               <button className="btn btn-primary" style={{ background: 'var(--status-critical)' }} onClick={handleClear}>
-                Delete All
+                {t('summ_btn_del_all')}
               </button>
               <button className="btn btn-secondary" onClick={() => setConfirmClear(false)}>
-                Cancel
+                {t('summ_cancel')}
               </button>
             </div>
           </div>
@@ -416,49 +417,49 @@ export default function Summarizer() {
               <BarChart3 size={22} />
             </div>
             <div className="summ-stat-value">{totalScans}</div>
-            <div className="summ-stat-label">Total Scans</div>
+            <div className="summ-stat-label">{t('summ_stat_total')}</div>
           </div>
           <div className="summ-stat-card glass-card">
             <div className="summ-stat-icon" style={{ background: 'rgba(34,197,94,0.15)', color: '#4ade80' }}>
               <CheckCircle2 size={22} />
             </div>
             <div className="summ-stat-value" style={{ color: '#4ade80' }}>{healthyCount}</div>
-            <div className="summ-stat-label">Healthy</div>
+            <div className="summ-stat-label">{t('summ_stat_healthy')}</div>
           </div>
           <div className="summ-stat-card glass-card">
             <div className="summ-stat-icon" style={{ background: 'rgba(239,68,68,0.15)', color: '#f87171' }}>
               <AlertTriangle size={22} />
             </div>
             <div className="summ-stat-value" style={{ color: '#f87171' }}>{diseasedCount}</div>
-            <div className="summ-stat-label">Diseased</div>
+            <div className="summ-stat-label">{t('summ_stat_diseased')}</div>
           </div>
           <div className="summ-stat-card glass-card">
             <div className="summ-stat-icon" style={{ background: 'rgba(245,158,11,0.15)', color: '#fbbf24' }}>
               <Leaf size={22} />
             </div>
             <div className="summ-stat-value" style={{ color: '#fbbf24' }}>{uniqueCrops}</div>
-            <div className="summ-stat-label">Crop Types</div>
+            <div className="summ-stat-label">{t('summ_stat_crops')}</div>
           </div>
           <div className="summ-stat-card glass-card">
             <div className="summ-stat-icon" style={{ background: 'rgba(59,130,246,0.15)', color: '#60a5fa' }}>
               <TrendingUp size={22} />
             </div>
             <div className="summ-stat-value" style={{ color: '#60a5fa' }}>{avgConfidence}%</div>
-            <div className="summ-stat-label">Avg Confidence</div>
+            <div className="summ-stat-label">{t('summ_stat_conf')}</div>
           </div>
           <div className="summ-stat-card glass-card">
             <div className="summ-stat-icon" style={{ background: 'rgba(168,85,247,0.15)', color: '#c084fc' }}>
               <ShieldAlert size={22} />
             </div>
             <div className="summ-stat-value" style={{ color: '#c084fc' }}>{uniqueDiseases.length}</div>
-            <div className="summ-stat-label">Diseases Found</div>
+            <div className="summ-stat-label">{t('summ_stat_found')}</div>
           </div>
         </div>
 
         {/* ── Overall Conclusion Banner ── */}
         <div className="summ-conclusion-banner glass-card animate-fade-in-up" style={{ borderColor: conclusionColor }}>
           <div className="summ-conclusion-left">
-            <div className="summ-conclusion-title">Overall Farm Health Conclusion</div>
+            <div className="summ-conclusion-title">{t('summ_conc_title')}</div>
             <div className="summ-conclusion-label" style={{ color: conclusionColor }}>
               {conclusionLabel}
             </div>
@@ -489,7 +490,7 @@ export default function Summarizer() {
                 {healthPct}%
               </text>
             </svg>
-            <div className="summ-ring-label">Healthy</div>
+            <div className="summ-ring-label">{t('summ_ring_healthy')}</div>
           </div>
         </div>
 
@@ -499,7 +500,7 @@ export default function Summarizer() {
           {/* LEFT: Per-Crop Summary Cards */}
           <div className="summ-crop-list">
             <h2 className="summ-section-title">
-              <Leaf size={18} /> Per-Crop Analysis
+              <Leaf size={18} /> {t('summ_sec_per_crop')}
             </h2>
             {Object.entries(groupedByCrop).map(([crop, scans]) => (
               <CropGroupCard
@@ -517,10 +518,10 @@ export default function Summarizer() {
             {/* Disease Frequency */}
             <div className="summ-panel-card glass-card">
               <h3 className="summ-panel-title">
-                <BarChart3 size={16} /> Disease Frequency
+                <BarChart3 size={16} /> {t('summ_sec_freq')}
               </h3>
               {diseaseFreq.length === 0 ? (
-                <p className="text-secondary" style={{ fontSize: '0.85rem' }}>No diseases detected yet. All scans are healthy! 🎉</p>
+                <p className="text-secondary" style={{ fontSize: '0.85rem' }}>{t('summ_no_disease')}</p>
               ) : (
                 <div className="summ-bars">
                   {diseaseFreq.map(([disease, count]) => (
@@ -539,7 +540,7 @@ export default function Summarizer() {
             {/* Crop Health Breakdown */}
             <div className="summ-panel-card glass-card">
               <h3 className="summ-panel-title">
-                <TrendingUp size={16} /> Health by Crop
+                <TrendingUp size={16} /> {t('summ_sec_health_crop')}
               </h3>
               <div className="summ-bars">
                 {Object.entries(groupedByCrop).map(([crop, scans]) => {
@@ -560,15 +561,15 @@ export default function Summarizer() {
             {/* Soil Health Tips */}
             <div className="summ-panel-card glass-card">
               <h3 className="summ-panel-title">
-                <Sprout size={16} /> General Soil &amp; Crop Care Tips
+                <Sprout size={16} /> {t('summ_sec_tips')}
               </h3>
               <ul className="summ-tips-list">
-                <li>🧪 <strong>Soil pH:</strong> Most crops thrive at pH 6.0–7.0. Test monthly.</li>
-                <li>💧 <strong>Irrigation:</strong> Drip irrigation reduces foliar disease pressure by 40–60%.</li>
-                <li>🌱 <strong>Nitrogen:</strong> Excess N promotes lush growth but increases disease susceptibility.</li>
-                <li>🔄 <strong>Crop Rotation:</strong> Rotate families every season to break soil-borne disease cycles.</li>
-                <li>🌿 <strong>Organic Matter:</strong> Maintain &gt;3% organic carbon for healthy microbiome.</li>
-                <li>☀️ <strong>Sunlight:</strong> Ensure good canopy airflow — dense canopy = higher humidity = more fungal risk.</li>
+                <li><span dangerouslySetInnerHTML={{__html:t('summ_tip_ph')}}/></li>
+                <li><span dangerouslySetInnerHTML={{__html:t('summ_tip_irrigation')}}/></li>
+                <li><span dangerouslySetInnerHTML={{__html:t('summ_tip_n')}}/></li>
+                <li><span dangerouslySetInnerHTML={{__html:t('summ_tip_rotate')}}/></li>
+                <li><span dangerouslySetInnerHTML={{__html:t('summ_tip_carbon')}}/></li>
+                <li><span dangerouslySetInnerHTML={{__html:t('summ_tip_sun')}}/></li>
               </ul>
             </div>
 
@@ -576,7 +577,7 @@ export default function Summarizer() {
             {uniqueDiseases.length > 0 && (
               <div className="summ-panel-card glass-card">
                 <h3 className="summ-panel-title">
-                  <Bug size={16} /> Diseases Detected
+                  <Bug size={16} /> {t('summ_sec_detected')}
                 </h3>
                 <div className="summ-disease-tags">
                   {uniqueDiseases.map(d => (
@@ -584,7 +585,7 @@ export default function Summarizer() {
                   ))}
                 </div>
                 <p className="text-secondary" style={{ fontSize: '0.83rem', marginTop: 12 }}>
-                  Visit the <strong>Disease Library</strong> for detailed symptom guides and treatment protocols for each disease above.
+                  <span dangerouslySetInnerHTML={{ __html: t('summ_visit_lib') }} />
                 </p>
               </div>
             )}

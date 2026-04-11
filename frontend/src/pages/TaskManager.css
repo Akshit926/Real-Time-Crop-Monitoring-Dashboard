@@ -516,3 +516,9 @@
   .tasks-filter-group { flex-direction: column; align-items: flex-start; }
   .tasks-filter-label { min-width: auto; }
 }
+
+@media (max-width: 480px) {
+  .task-card { padding: 12px; gap: 10px; }
+  .task-meta-row { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .tasks-stat-chip { min-width: 45%; }
+}

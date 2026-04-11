@@ -1,0 +1,173 @@
+.profit-page {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.profit-page-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1.35fr 0.95fr;
+  margin-top: 24px;
+}
+
+.profit-panel,
+.profit-results {
+  padding: 24px;
+}
+
+.panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.input-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.input-group {
+  display: grid;
+  gap: 8px;
+}
+
+.input-group label {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.input-group input,
+.input-group select {
+  width: 100%;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 14px;
+  color: var(--text-primary);
+  padding: 14px 16px;
+}
+
+.primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: var(--accent-primary);
+  color: #0a0f1a;
+  border-radius: 14px;
+  font-weight: 700;
+  transition: transform var(--transition-fast);
+}
+
+.primary-button:hover {
+  transform: translateY(-1px);
+}
+
+.result-block {
+  display: grid;
+  gap: 18px;
+}
+
+.profit-summary-card {
+  padding: 20px;
+  border-radius: 18px;
+}
+
+.summary-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.summary-label {
+  display: block;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.summary-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.result-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.result-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 16px;
+}
+
+.result-item span {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.result-item strong {
+  font-size: 1.2rem;
+}
+
+.profit-positive {
+  color: var(--status-healthy);
+}
+
+.profit-negative {
+  color: var(--status-critical);
+}
+
+.error-text {
+  color: var(--status-critical);
+  margin-top: 18px;
+}
+
+.chart-card {
+  padding: 24px;
+  margin-top: 24px;
+}
+
+.chart-wrapper {
+  min-height: 360px;
+}
+
+.comparison-banner {
+  margin-top: 20px;
+  padding: 16px 18px;
+  color: var(--text-primary);
+  border-radius: 16px;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  background: rgba(16, 185, 129, 0.08);
+}
+
+@media (max-width: 992px) {
+  .profit-page-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .input-grid {
+    grid-template-columns: 1fr;
+  }
+  .summary-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .panel-heading {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .result-grid {
+    grid-template-columns: 1fr;
+  }
+}
