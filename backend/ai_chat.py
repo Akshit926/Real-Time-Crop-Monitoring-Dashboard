@@ -1,4 +1,4 @@
-"""AI-assisted chat service with graceful fallback to the local chatbot."""
+"""AI-assisted chat service with Groq support and graceful local fallback."""
 
 from __future__ import annotations
 
@@ -7,8 +7,51 @@ import os
 from typing import Any
 from urllib.request import Request, urlopen
 
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except Exception:
+    pass
+
 
 OPENAI_API_URL = "https://api.openai.com/v1/chat/completions"
+GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
+
+PROJECT_KEYWORDS = {
+    "agrovision",
+    "crop",
+    "disease",
+    "leaf",
+    "plant",
+    "farm",
+    "weather",
+    "zone",
+    "analysis",
+    "dashboard",
+    "predict",
+    "chatbot",
+    "fertilizer",
+    "irrigation",
+    "blight",
+    "pest",
+    "farming",
+    "कृषि",
+    "फसल",
+    "मौसम",
+    "रोग",
+}
+
+
+def _is_summary_request(message: str) -> bool:
+    message_lower = message.lower()
+    summary_markers = ["summar", "summary", "overview", "project summary", "summarise", "summarize", "सार", "सारांश"]
+    return any(marker in message_lower for marker in summary_markers)
+
+
+def _is_project_related(message: str) -> bool:
+    message_lower = message.lower()
+    return any(keyword in message_lower for keyword in PROJECT_KEYWORDS)
 
 
 def _build_system_prompt(lang: str, weather: dict[str, Any] | None) -> str:
@@ -22,20 +65,33 @@ def _build_system_prompt(lang: str, weather: dict[str, Any] | None) -> str:
 
     if lang == "hi":
         return (
-            "आप AgroVision के कृषि सहायक हैं। जवाब छोटे, व्यावहारिक और किसान-हितैषी रखें। "
-            "जहां जरूरी हो वहां कदमों में सलाह दें। अनिश्चित होने पर स्पष्ट बताएं।"
+            "आप AgroVision के कृषि सहायक हैं। केवल AgroVision, फसल स्वास्थ्य, रोग पहचान, मौसम, "
+            "और इसी प्रोजेक्ट से जुड़े विषयों पर ही जवाब दें। यदि सवाल विषय से बाहर हो तो विनम्रता से "
+            "मना करें और यूजर को परियोजना-संबंधित सवाल पूछने के लिए कहें। जवाब छोटे, व्यावहारिक और "
+            "किसान-हितैषी रखें। जहां जरूरी हो वहां कदमों में सलाह दें। अनिश्चित होने पर स्पष्ट बताएं। "
+            "यदि यूजर सारांश मांगे तो AgroVision का संक्षिप्त प्रोजेक्ट-सार दें: React+Vite frontend, "
+            "FastAPI backend, crop disease prediction model, weather panel, farm zone map, and bilingual chat."
             + weather_text
         )
 
     return (
-        "You are AgroVision's farm assistant. Keep answers practical, concise, and field-oriented. "
-        "Use simple action steps when helpful, and be explicit when uncertain."
+        "You are AgroVision's assistant. Answer ONLY AgroVision-project topics: crop health, disease prediction, "
+        "weather, farm zones, analysis dashboard, and project usage. If asked out-of-scope questions, politely refuse "
+        "and ask for AgroVision-related queries. Keep answers practical, concise, and field-oriented. "
+        "If the user asks for a summary, provide a concise AgroVision project summary: React+Vite frontend, FastAPI backend, "
+        "crop disease prediction model, weather insights, farm map, and bilingual assistant."
         + weather_text
     )
 
 
 def _fallback_with_context(chatbot, message: str, lang: str, weather: dict[str, Any] | None) -> tuple[str, str]:
-    response = chatbot.get_response(message, lang)
+    if _is_summary_request(message):
+        response = chatbot.get_project_summary(lang)
+    elif not _is_project_related(message):
+        response = chatbot.get_out_of_scope_response(lang)
+    else:
+        response = chatbot.get_response(message, lang)
+
     if weather:
         if lang == "hi":
             response += (
@@ -51,8 +107,19 @@ def _fallback_with_context(chatbot, message: str, lang: str, weather: dict[str, 
 
 
 def get_ai_chat_response(chatbot, message: str, lang: str = "en", weather: dict[str, Any] | None = None) -> tuple[str, str]:
-    api_key = os.getenv("OPENAI_API_KEY")
-    model = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+    api_key = os.getenv("GROQ_API_KEY") or os.getenv("OPENAI_API_KEY")
+    model = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+    api_url = os.getenv("GROQ_API_URL", GROQ_API_URL)
+
+    if _is_summary_request(message):
+        message = (
+            "Give a concise summary of the AgroVision project with features, architecture, and how farmers use it in practice."
+            if lang == "en"
+            else "AgroVision प्रोजेक्ट का संक्षिप्त सार दें: फीचर्स, आर्किटेक्चर और किसान उपयोग।"
+        )
+
+    if not _is_project_related(message) and not _is_summary_request(message):
+        return chatbot.get_out_of_scope_response(lang), "local"
 
     if not api_key:
         return _fallback_with_context(chatbot, message, lang, weather)
@@ -68,7 +135,7 @@ def get_ai_chat_response(chatbot, message: str, lang: str = "en", weather: dict[
     }
 
     request = Request(
-        OPENAI_API_URL,
+        api_url,
         data=json.dumps(payload).encode("utf-8"),
         headers={
             "Authorization": f"Bearer {api_key}",
@@ -80,7 +147,9 @@ def get_ai_chat_response(chatbot, message: str, lang: str = "en", weather: dict[
     try:
         with urlopen(request, timeout=18) as response:
             body = json.loads(response.read().decode("utf-8"))
-        content = body["choices"][0]["message"]["content"].strip()
+        content = body.get("choices", [{}])[0].get("message", {}).get("content", "").strip()
+        if not content:
+            return _fallback_with_context(chatbot, message, lang, weather)
         return content, "ai"
     except Exception:
         return _fallback_with_context(chatbot, message, lang, weather)

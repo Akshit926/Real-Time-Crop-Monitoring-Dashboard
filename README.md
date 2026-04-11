@@ -3,7 +3,7 @@ AgroVision is a full-stack, AI-powered agricultural monitoring platform designed
  * **🔍 AI Disease Detection:** Upload or capture images via webcam to identify diseases across the full PlantVillage label set used by the fine-tuned model.
  * **📊 Interactive Analytics:** Real-time data visualization using Chart.js, including disease distribution and health trends.
  * **🗺️ Farm Zone Mapping:** SVG-based interactive map to monitor different sectors of a farm with color-coded health statuses.
- * **🤖 AI Chatbot:** Intelligent agricultural assistant with OpenAI integration and local rule-based fallback (50+ Q&A pairs).
+ * **🤖 AI Chatbot:** Groq-powered assistant with local rule-based fallback (50+ Q&A pairs).
  * **🌦️ Weather Integration:** Real-time weather data from Open-Meteo API with farming advice.
  * **🌐 Bilingual Support:** Seamless toggle between **English** and **Hindi** for localized accessibility.
  * **📱 Responsive Design:** Fully optimized for mobile and desktop with a sleek Dark Mode glassmorphism aesthetic.
@@ -13,7 +13,7 @@ AgroVision is a full-stack, AI-powered agricultural monitoring platform designed
 | **Frontend** | React 19, Vite, TypeScript, Tailwind CSS, Framer Motion, Chart.js, React Router |
 | **Backend** | FastAPI (Python 3.9+), Uvicorn |
 | **AI/ML** | Fine-tuned MobileNetV2, TensorFlow/Keras, Pillow, NumPy |
-| **APIs** | OpenAI (optional), Open-Meteo (weather) |
+| **APIs** | Groq (optional), Open-Meteo (weather) |
 | **Icons/UI** | Lucide React, Google Fonts (Inter & Outfit) |
 | **Deployment** | Vercel (serverless functions) |
 ## 📂 Project Structure
@@ -26,7 +26,7 @@ Crop_Monitoring/
 │   ├── main.py              # FastAPI entry point & CORS config
 │   ├── model.py             # CNN Predictor logic with model loading
 │   ├── chatbot.py           # Rule-based Knowledge Engine
-│   ├── ai_chat.py           # OpenAI-powered chat with fallback
+│   ├── ai_chat.py           # Groq-powered chat with fallback
 │   ├── weather.py           # Weather service (Open-Meteo API)
 │   ├── crop_model.h5        # Pre-trained MobileNetV2 model
 │   ├── test_predict.py      # Model testing utilities
@@ -68,12 +68,10 @@ Crop_Monitoring/
 
 ```
 ## ⚙️ Installation & Setup
-<<<<<<< HEAD
-### 1. Team Setup (Recommended: No local Python/TensorFlow install)
+### 1. Team Setup (Recommended: no local Python/TensorFlow install)
 Use Docker so everyone runs the same environment and dependencies.
 
 ```bash
-# from repository root
 docker compose up --build
 ```
 
@@ -87,82 +85,34 @@ To stop:
 docker compose down
 ```
 
-### 2. Local Setup (Optional)
+### 2. Enable Groq AI Chat (Optional)
+Create a `.env` file at repository root and add:
+
+```env
+GROQ_API_KEY=your_groq_api_key_here
+GROQ_MODEL=llama-3.3-70b-versatile
+```
+
+If `GROQ_API_KEY` is not set, chatbot automatically falls back to local rule-based responses.
+
+### 3. Local Setup (Optional)
 Use this only if you do not want Docker.
 
 Backend (Python 3.11 recommended):
-=======
-### Prerequisites
-- Node.js >= 22.0.0
-- Python 3.9+
-- npm or yarn
-
-### 1. Clone and Setup Monorepo
-```bash
-# Install root dependencies
-npm install
-
-# This will install dependencies for both frontend and backend workspaces
-```
-
-### 2. Backend Setup
->>>>>>> 7152e5c2f81dc7941e7e11a1c566091783068620
 ```bash
 cd backend
-<<<<<<< HEAD
 pip install -r requirements.txt
 uvicorn main:app --reload --port 8000
 ```
 
 Frontend:
-=======
-
-# Install Python dependencies
-pip install -r requirements.txt
-
-# For local development
-uvicorn main:app --reload --port 8000
-```
-*The backend will be live at http://localhost:8000. Interactive API docs available at /docs.*
-
-### 3. Frontend Setup
->>>>>>> 7152e5c2f81dc7941e7e11a1c566091783068620
 ```bash
 cd frontend
-<<<<<<< HEAD
 npm install
 npm run dev
 ```
 
 Open http://localhost:5173 in your browser.
-=======
-
-# Install dependencies (if not done via monorepo)
-npm install
-
-# Start development server
-npm run dev
-```
-*Open http://localhost:5173 in your browser.*
-
-## 🚀 Deployment
-### Vercel Deployment
-The project is configured for seamless deployment on Vercel:
-
-```bash
-# Install Vercel CLI
-npm install -g vercel
-
-# Deploy
-vercel
-```
-
-The `vercel.json` configuration handles:
-- Frontend build and static file serving
-- Python serverless functions for the API
-- Proper routing for API endpoints
-
->>>>>>> 7152e5c2f81dc7941e7e11a1c566091783068620
 ## 🧠 AI Model Approach
 AgroVision loads the provided fine-tuned `.h5` MobileNetV2 model for real-time inference:
  * **Logic:** Images are resized to 224x224, preprocessed for MobileNetV2, and classified using the trained model.
@@ -171,10 +121,12 @@ AgroVision loads the provided fine-tuned `.h5` MobileNetV2 model for real-time i
  * **Note:** Requires TensorFlow-compatible environment for full functionality.
 
 ## 🤖 Chatbot Features
-- **Primary:** OpenAI GPT integration for intelligent agricultural advice
+- **Primary:** Groq integration for intelligent agricultural advice
 - **Fallback:** Local rule-based system with 50+ pre-defined Q&A pairs
 - **Weather-Aware:** Incorporates current weather conditions in responses
 - **Bilingual:** Supports both English and Hindi queries
+- **Project Summarizer:** Quick summaries focused on AgroVision only
+- **Project-only guard:** Out-of-scope prompts are politely declined
 
 ## 📈 Dashboard Overview
  * **Dashboard:** Overview of scan history, active alerts, and key metrics.

@@ -11,6 +11,7 @@ const quickReplies = {
     'Best fertilizer tips',
     'Pest control help',
     'What should I do before rain?',
+    'Summarize this project',
   ],
   hi: [
     'पत्तियां पीली क्यों हैं?',
@@ -18,6 +19,7 @@ const quickReplies = {
     'खाद की सलाह दें',
     'कीट नियंत्रण मदद',
     'बारिश से पहले क्या करें?',
+    'इस प्रोजेक्ट का सारांश दें',
   ],
 };
 
