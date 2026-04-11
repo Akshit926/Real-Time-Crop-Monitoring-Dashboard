@@ -14,17 +14,20 @@ try:
     from .chatbot import chatbot
     from .weather import get_weather
     from .ai_chat import get_ai_chat_response
+    from .profit_estimator import calculate_profit, get_crop_options
 except ImportError:
     try:  # Vercel / sys.path-based import
         from backend.model import predictor
         from backend.chatbot import chatbot
         from backend.weather import get_weather
         from backend.ai_chat import get_ai_chat_response
+        from backend.profit_estimator import calculate_profit, get_crop_options
     except ImportError:  # pragma: no cover - bare local script execution
         from model import predictor  # type: ignore[no-redef]
         from chatbot import chatbot  # type: ignore[no-redef]
         from weather import get_weather  # type: ignore[no-redef]
         from ai_chat import get_ai_chat_response  # type: ignore[no-redef]
+        from profit_estimator import calculate_profit, get_crop_options
 
 app = FastAPI(
     title="AgroVision API",
@@ -95,6 +98,19 @@ class WeatherResponse(BaseModel):
     irrigation: IrrigationResponse
     forecast_next_hours: list[ForecastPointResponse]
     source: str
+
+
+class ProfitRequest(BaseModel):
+    crop: str
+    area: float
+
+
+class ProfitResponse(BaseModel):
+    crop: str
+    area: float
+    total_cost: float
+    revenue: float
+    profit: float
 
 
 # ── Farm Zone Data (Simulated) ────────────────────────────────────
@@ -238,6 +254,23 @@ async def weather_endpoint(lat: float | None = None, lon: float | None = None, l
         return WeatherResponse(**get_weather(lat=lat, lon=lon, lang=lang, location_name=location))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Weather lookup failed: {str(e)}")
+
+
+@app.post("/profit", response_model=ProfitResponse)
+async def profit_endpoint(request: ProfitRequest):
+    """Estimate total cost, revenue, and profit for a crop and area."""
+    try:
+        return calculate_profit(request.crop, request.area)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Profit estimation failed: {str(e)}")
+
+
+@app.get("/profit/crops")
+async def profit_crops_endpoint():
+    """Return available crops for profit estimation."""
+    return {"crops": get_crop_options()}
 
 
 # ── Field Journal (In-Memory Store) ──────────────────────────────
